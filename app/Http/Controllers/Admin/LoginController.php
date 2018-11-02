@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Requests\Admin\LoginRequest;
 use App\Http\Controllers\Controller;
 use App\Models\LogStaffLogin;
+use App\Models\Staffs;
 use App\Traits\ResponseJsonTrait;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -24,7 +25,7 @@ class LoginController extends Controller
         $fields['password'] = $request->get('loginPwd');
         if ($this->guard()->attempt($fields, true)) {
             $staff = $this->guard()->user();
-            if ($staff->staffStatus != 1) {
+            if ($staff->status != Staffs::STATUS_ACTIVE) {
                 $this->guard()->logout();
                 return $this->handleFail('账号已被禁止登录');
             } else {

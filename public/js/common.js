@@ -1,4 +1,9 @@
 var Qk = Qk || {};
+var loading = 0;
+
+var layer = layui.use('layer', function () {
+    return layui.layer;
+});
 
 Qk.open = function (optioins) {
     var opts = {};
@@ -33,8 +38,62 @@ Qk.loading = function () {
 }
 
 Qk.close = function (index) {
+    loading = 0;
     return layer.close(index);
 }
+
+Qk.ajaxRequest = function (url, params, type, successCallback, failCallback, dataType="json") {
+    if (loading < 1) loading = Qk.msg('加载中...', {icon: 16, time: 60000});
+    $.ajax({
+        type: type,
+        url: url,
+        data: params,
+        dataType: dataType,
+        headers: {
+            'X-CSRF-TOKEN': baseParams.csrf_token
+        },
+        success: function (data) {
+            if (loading > 0) Qk.close(loading);
+            if (typeof(data) === 'string' && dataType == 'json') {
+                data = JSON.stringify(data);
+            }
+            var is_no_login = false;
+            if (dataType == 'json' && data.status == 'no_login') {
+                is_no_login = true;
+            } else if (data == '{"status":"no_login"}') {
+                is_no_login = true;
+            }
+            if (is_no_login) {
+                this.msg('登录信息已失效，请重新登录后再操作.', {icon: 2}, function () {
+                    location.href = '/admin/login';
+                })
+            } else {
+                successCallback(data);
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            if (loading > 0) Qk.close(loading);
+            if (typeof(XMLHttpRequest) === 'string') {
+                XMLHttpRequest = JSON.stringify(XMLHttpRequest);
+            }
+            if (XMLHttpRequest.responseJSON) {
+                if (XMLHttpRequest.responseJSON.errors) {
+                    failCallback(XMLHttpRequest.responseJSON.errors);
+                } else if(XMLHttpRequest.responseJSON.message) {
+                    failCallback(XMLHttpRequest.responseJSON.message);
+                } else if(XMLHttpRequest.responseJSON.info) {
+                    failCallback(XMLHttpRequest.responseJSON.info);
+                }
+            } else {
+                Qk.msg('errors:'+textStatus, {icon: 2});
+            }
+        }
+    })
+}
+
+Qk.loadPage = function (url, params, successCallback, failCallback) {
+    this.ajaxRequest(url, params, 'GET', successCallback, failCallback, 'html')
+};
 
 Qk.getParams = function (obj) {
     var params = {}, chk = {}, s;
@@ -59,86 +118,6 @@ Qk.getParams = function (obj) {
     })
     chk = null, s = null;
     return params;
-}
-
-Qk.ajaxRequest = function (url, params, type, successCallback, failCallback, dataType='json') {
-    $.ajax({
-        type: type,
-        url: url,
-        data: params,
-        dataType: dataType,
-        headers: {
-            'X-CSRF-TOKEN': window.params.csrf_token
-        },
-        success: function (data) {
-            if (typeof(data) === 'string' && dataType == 'json') {
-                data = JSON.stringify(data);
-            }
-            var is_no_login = false;
-            if (dataType == 'json' && data.status == 'no_login') {
-                is_no_login = true;
-            } else if (data == '{"status":"no_login"}') {
-                is_no_login = true;
-            }
-            if (is_no_login) {
-                Qk.msg('登录信息已失效，请重新登录后再操作.', {icon: 2}, function () {
-                    location.href = '/admin/login';
-                })
-            } else {
-                successCallback(data);
-            }
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            if (typeof(XMLHttpRequest) === 'string') {
-                XMLHttpRequest = JSON.stringify(XMLHttpRequest);
-            }
-            if (XMLHttpRequest.responseJSON) {
-                if (XMLHttpRequest.responseJSON.errors) {
-                    failCallback(XMLHttpRequest.responseJSON.errors);
-                } else if(XMLHttpRequest.responseJSON.message) {
-                    failCallback(XMLHttpRequest.responseJSON.message);
-                } else if(XMLHttpRequest.responseJSON.info) {
-                    failCallback(XMLHttpRequest.responseJSON.info);
-                }
-            } else {
-                failCallback(textStatus);
-            }
-        }
-    })
-}
-
-Qk.listGrid = function (url, columns, options={}) {
-    var defaults  = {
-        url: url,
-        parms: {'_token': window.params.csrf_token, 'type':'ajax_get_datas'},
-        method: 'get',
-        pageSize:Qk.defaultPageSize,
-        pageSizeOptions:Qk.defaultPageSizeOptions,
-        root: 'message',
-        height: '100%',
-        width: '100%',
-        delayLoad: true,
-        rownumbers: true,
-        allowHideColumn: false,
-        columns: columns,
-        enabledSort: false,
-        onError: function(XMLHttpRequest, textStatus, errorThrown) {
-            if (XMLHttpRequest.responseJSON) {
-                Qk.msg(XMLHttpRequest.responseJSON.info, {icon: 2});
-            } else {
-                Qk.msg(textStatus+","+errorThrown, {icon: 2});
-            }
-        }
-    };
-    return $('#maingrid').ligerGrid($.extend(defaults, options));
-}
-
-Qk.pageHeight = function () {
-    return document.documentElement.clientHeight || document.body.clientHeight;
-}
-
-Qk.pageWidth = function () {
-    return document.documentElement.clientWidth || document.body.clientWidth;
 }
 
 Qk.getRealRoutePath = function (routeUrl, params) {
@@ -177,5 +156,14 @@ Qk.templateData = function (template, data) {
     return template;
 }
 
+Qk.pageHeight = function () {
+    return document.documentElement.clientHeight || document.body.clientHeight;
+}
+
+Qk.pageWidth = function () {
+    return document.documentElement.clientWidth || document.body.clientWidth;
+}
+
 Qk.defaultPageSize = 25;
 Qk.defaultPageSizeOptions = [25, 50, 100];
+Qk.maxUploadSize = 20 * 1024;

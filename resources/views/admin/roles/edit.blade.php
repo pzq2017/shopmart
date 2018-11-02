@@ -1,42 +1,58 @@
-<div class="toolbar">
-   <button class="btn btn-blue f-right" onclick="saveRole({{ $role->id }})">保存</button>
-   <button class="btn f-left" onclick="goBack('{{ route('admin.roles.index') }}')">返回</button>
-   <div class="f-clear"></div>
+<div class="layui-card-header">
+    <button class="layui-btn layui-btn-normal" onclick="goBack('{{ route('admin.system.role.index') }}')">返回</button>
 </div>
-<div id="maingrid">
-  <form autocomplete='off'>
-    <table class='table-form' style="margin-top: 10px;">
-      <tr>
-         <th class="w120">角色名称<font color='red'>*</font>:</th>
-         <td><input type="text" name='name' value="{{ $role->name }}" class='ipt' maxLength='20'/></td>
-      </tr>
-      <tr>
-         <th>角色备注:</th>
-         <td><input type="text" name='desc' value="{{ $role->desc }}" class='ipt' style='width:70%' maxLength='100'/></td>
-      </tr>
-      <tr>
-         <th>权限:</th>
-         <td>
-            <input type="hidden" id="menus_privileges" value="{{ $sysMenus }}">
-            <ul id="menuTree" class="ztree ztree_panel"></ul>
-         </td>
-      </tr>
-    </table>
-  </form>
+<div class="layui-card-body">
+    <form class="layui-form" onsubmit="return false;">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">角色名称<font color='red'>*</font>:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="name" lay-verify="required" autocomplete="off" class="layui-input" value="{{ $role->name }}">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">角色备注:</label>
+            <div class="layui-input-block">
+                <textarea name="desc" autocomplete="off" class="layui-input" style="width: 80%; height: 60px;">{{ $role->desc }}</textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">权限菜单<font color='red'>*</font>:</label>
+            <div class="layui-input-block">
+                <input type="hidden" id="menus_privileges" value="{{ $menuPrivileges }}">
+                <ul id="menuTree" class="ztree ztree_panel"></ul>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="role_info">立即提交</button>
+            </div>
+        </div>
+    </form>
 </div>
-<script type="text/javascript">
-  var zTree;
-  $(function(){
+<link href="/plugin/ztree/css/zTreeStyle/zTreeStyle.css" rel="stylesheet" type="text/css" />
+<script src="/plugin/ztree/jquery.ztree.all-3.5.js"></script>
+<script>
     var setting = {
-      check: {
-        enable: true
-      }
+        check: {
+            enable: true
+        }
     };
+
     var zNodes = $('#menus_privileges').val();
     if (zNodes) {
-      zNodes = eval('(' + zNodes + ')');
-      $.fn.zTree.init($('#menuTree'), setting, zNodes);
-      zTree = $.fn.zTree.getZTreeObj('menuTree');
+        zNodes = eval('(' + zNodes + ')');
+        $.fn.zTree.init($('#menuTree'), setting, zNodes);
+        zTree = $.fn.zTree.getZTreeObj('menuTree');
     }
-  })
+
+    layui.use('form', function () {
+        var form = layui.form;
+        form.render();
+
+        form.on('submit(role_info)', function (data) {
+            Save('{{ $role->id }}', data.field);
+        });
+    })
 </script>

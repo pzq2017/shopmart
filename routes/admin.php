@@ -4,29 +4,49 @@ Route::get('/login', 'Admin\LoginController@index')->name('login');
 Route::post('/login', 'Admin\LoginController@login')->name('checkLogin');
 
 Route::group(['middleware' => ['admin.auth'], 'namespace' => 'Admin'], function () {
-    Route::get('/index', 'IndexController@index')->name('index');
-    Route::get('/main', 'IndexController@main')->name('main');
-    Route::get('/subMenus', 'IndexController@subMenus')->name('subMenus');
-    Route::get('/clearCache', 'IndexController@clearCache')->name('clearCache');
-    Route::post('/updatPwd', 'IndexController@updatPwd')->name('updatPwd');
-    Route::get('/logout', 'IndexController@logout')->name('logout');
-
-    Route::resource('/menu', 'MenuController')->except('show');
-    Route::resource('/memu/privileges', 'MenuPrivilegesController')->except('show');
-    Route::post('/menu/getSysMenus', 'MenuController@sysMenus')->name('menu.getSysMenus');
-
-    Route::resource('/homemenu', 'HomeMenuController')->except('show');
-
-    Route::resource('/roles', 'RolesController')->except('show');
-
-    Route::resource('/staffs', 'StaffsController')->except('show');
-
-    Route::get('/logs/staffs/login', 'LogController@staffsLogin')->name('logs.staffs.login');
-    Route::get('/logs/staffs/operate', 'LogController@staffsOperate')->name('logs.staffs.operate');
-
-    Route::resource('/messages', 'MessagesController');
-    Route::get('/messages/{message}/sendSet', 'MessagesController@sendMessage')->name('messages.sendSet');
-    Route::post('/messages/{message}/send', 'MessagesController@sendMessage')->name('messages.send');
-
     Route::post('/sigupload/picture', 'SiguploadController@picture')->name('sigupload.picture');
+    /**
+     * 首页
+     */
+    Route::get('/index', 'IndexController@index')->name('index');
+
+    /**
+     * 系统管理
+     */
+    Route::group(['namespace' => 'System', 'prefix' => '/system/', 'as' => 'system.'], function () {
+        Route::resource('staff', 'StaffsController')->except('show');
+        Route::get('staff/lists', 'StaffsController@lists')->name('staff.lists');
+
+        Route::resource('role', 'RolesController')->except('show');
+        Route::get('role/lists', 'RolesController@lists')->name('role.lists');
+    });
+
+    /**
+     * 运营管理
+     */
+    Route::group(['namespace' => 'Operate', 'prefix' => '/operation/', 'as' => 'operation.'], function () {
+        Route::get('index', 'OperationController@index')->name('index');
+    });
+
+    /**
+     * 订单管理
+     */
+    Route::group(['namespace' => 'Order', 'prefix' => '/order/', 'as' => 'order.'], function () {
+        Route::get('index', 'OrderController@index')->name('index');
+    });
+
+    /**
+     * 店铺管理
+     */
+    Route::group(['namespace' => 'Shop', 'prefix' => '/shop/', 'as' => 'shop.'], function () {
+        Route::get('index', 'ShopController@index')->name('index');
+    });
+
+    /**
+     * 商品管理
+     */
+    Route::group(['namespace' => 'Goods', 'prefix' => '/goods/', 'as' => 'goods.'], function () {
+        Route::get('index', 'GoodsController@index')->name('index');
+    });
+
 });

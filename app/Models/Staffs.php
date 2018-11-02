@@ -12,17 +12,17 @@ class Staffs extends Authenticatable
 
     protected $table = 'staffs';
 
-    protected $fillable = ['loginName', 'password', 'secretKey', 'staffName', 'staffNo', 'staffPhoto', 'staffRoleId', 'workStatus', 'staffStatus'];
+    protected $fillable = ['loginName', 'password', 'secretKey', 'staffName', 'staffPhone', 'staffEmail', 'staffPhoto', 'staffRoleId', 'status'];
 
     protected $hidden = ['password', 'secretKey'];
 
     protected $dates = ['created_at', 'updated_at', 'deleted_at', 'lastTime'];
 
-    const SUPER_USER = -1;		//超级用户
+    const SUPER_USER = -1;		//超管
 
-    const WORKING = 1;			//状态在职
+    const STATUS_ACTIVE = 1;	//账号激活
 
-    const LEAVE_WORK = 0;		//状态离职
+    const STATUS_DISABLED = 0;	//账号禁止
 
     public function role()
     {

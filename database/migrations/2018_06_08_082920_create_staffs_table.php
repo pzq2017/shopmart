@@ -19,17 +19,16 @@ class CreateStaffsTable extends Migration
             $table->string('password', 64);
             $table->string('secretKey', 128)->unique();
             $table->string('staffName', 64)->nullable();
-            $table->string('staffNo', 64)->unique();
+            $table->string('staffPhone', 32)->nullable();
+            $table->string('staffEmail', 64)->nullable();
             $table->string('staffPhoto', 128)->nullable();
             $table->integer('staffRoleId')->default(0);
-            $table->boolean('workStatus')->default(true);
-            $table->boolean('staffStatus')->default(true);
+            $table->boolean('status')->default(false);
             $table->timestamps();
             $table->softDeletes();
             $table->timestamp('lastTime')->nullable();
             $table->ipAddress('lastIp')->nullable();
             $table->rememberToken();
-            $table->index(['workStatus', 'staffStatus']);
         });
     }
 

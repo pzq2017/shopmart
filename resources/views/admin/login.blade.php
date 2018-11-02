@@ -45,7 +45,7 @@
         </div>
 </div>
 <script type="application/javascript" src="/js/jquery.min.js"></script>
-<script type="application/javascript" src="/plugin/layui/layui.all.js"></script>
+<script type="application/javascript" src="/plugin/layui/layui.js"></script>
 <script type="application/javascript" src="/js/common.js"></script>
 <script type="application/javascript" src="/js/admin/login.js"></script>
 <script>

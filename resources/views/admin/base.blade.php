@@ -4,34 +4,42 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>后台管理中心 - 电子商务系统</title>
-    <link href="/plugin/ligerui/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/plugin/layui/css/layui.css" rel="stylesheet" type="text/css" />
     <link href="/css/style.css" rel="stylesheet" type="text/css" />
-    <script src="/js/jquery.min.js"></script>
-    <script src="/plugin/ligerui/js/ligerui.all.js" type="text/javascript"></script>
-    <script src='/plugin/layui/layui.all.js' type='text/javascript'></script>
-    <script src="/js/common.js"></script>
-    <script src="/js/admin/base.js"></script>
+    <script src="/js/jquery.min.js" type="text/javascript"></script>
+    <script src='/plugin/layui/layui.js' type='text/javascript'></script>
+    <script src="/js/common.js" type="text/javascript"></script>
+    <script src="/js/admin/base.js" type="text/javascript"></script>
     <script>
-        window.params = {csrf_token: '{{ csrf_token() }}', subMenusUrl: '{{ route('admin.subMenus') }}', defaultUrl: '{{ route('admin.main') }}', clearCacheUrl: '{{ route('admin.clearCache') }}', updPwdUrl: '{{ route('admin.updatPwd') }}', logoutUrl: '{{ route('admin.logout') }}'};
+        var baseParams = {csrf_token: '{{ csrf_token() }}', upload_url: '{{ route('admin.sigupload.picture') }}'};
     </script>
 </head>
-<body>
-<div id="topmenu" class="topmenu">
-    <div class="topmenu-logo"></div>
-    <div class="topmenu-welcome">
-        <a href="#" target='_blank' class="top-link">商城首页</a>
-        <span class="space">|</span>
-        <a href="javascript:clearCache();" class="top-link">清除缓存</a>
-        <span class="space">|</span>
-        <a href="javascript:editPwd();" class="top-link">修改密码</a>
-        <span class="space">|</span>
-        <a href="javascript:logout();" class="top-link">退出系统</a>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">layui 后台布局</div>
+        <ul class="layui-nav layui-layout-left">
+            @foreach($base['header_menus'] as $menu)
+            <li class="layui-nav-item"><a href="{{ $menu->url }}">{{ $menu->name }}</a></li>
+            @endforeach
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="/imgs/default_headpic.png" class="layui-nav-img">
+                    贤心<span class="layui-nav-more"></span></a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">基本资料</a></dd><hr>
+                    <dd><a href="">修改密码</a></dd><hr>
+                    <dd><a href="">退出系统</a></dd>
+                </dl>
+            </li>
+        </ul>
     </div>
-</div>
-<div id="tabs" style="width:100%; overflow: hidden; border: 1px solid #D3D3d3;" class="liger-tab">
-    @foreach($base['header_menus'] as $menu)
-        <div id="tab-{{ $menu->id }}" tabId="tab-{{ $menu->id }}" title="{{ $menu->name }}" class='tab'></div>
-    @endforeach
+    @include('admin.sidebar', ['menus' => $base['sidebar_menus'] ])
+    <div class="layui-body" id="content_body">
+        @yield('body')
+    </div>
 </div>
 <div id='editPwdBox' style='display:none;'>
   <form id='editPwdForm' autocomplete="off">
@@ -51,7 +59,8 @@
    </table>
   </form>
 </div>
-<iframe name="iframe_upload" class="hidden"></iframe>
-<form name="picture_upload_form" method="POST" enctype="multipart/form-data" target="iframe_upload" action="{{ route('admin.sigupload.picture') }}" class="hidden"></form>
+<script>
+    layui.use('element');
+</script>
 </body>
 </html>

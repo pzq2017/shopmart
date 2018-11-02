@@ -12,22 +12,17 @@ class SysMenu extends Model
 
     protected $table = 'sys_menus';
 
-    protected $fillable = ['parentId', 'name', 'sort'];
+    protected $fillable = ['parentId', 'name', 'url', 'sort'];
 
     protected $dates = ['created_at', 'updated_at', 'deleted_at'];
 
-    public function scopeSysMenus($query, $parentId=0)
+    public function scopeSysMenusByPid($query, $parentId=0)
     {
         return $query->where('parentId', $parentId);
     }
 
-    public function privileges()
+    public function scopeSysMenusByUrl($query, $url)
     {
-    	return $this->hasMany(SysMenuPrivileges::class, 'menuId');
-    }
-
-    public function sys_leftmenu_privilige()
-    {
-        return $this->hasOne(SysMenuPrivileges::class, 'menuId')->where('isMenu', 1);
+        return $query->where('url', $url);
     }
 }

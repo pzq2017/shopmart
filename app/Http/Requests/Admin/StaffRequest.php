@@ -26,19 +26,16 @@ class StaffRequest extends FormRequest
     {
         return [
             'loginName' => 'required',
-            'password' => 'max:20',
-            'staffName' => 'required',
         ];
     }
 
     public function messages()
     {
         return [
-            'loginName.required' => '请输入职员登录账号.',
-            'loginName.unique' => '职员登录账号已存在.',
-            'password.required' => '请输入职员登录密码.',
-            'password.max' => '职员登录密码最大20位.',
-            'staffName.required' => '职员姓名不能为空.'
+            'loginName.required' => '登录账号不能为空.',
+            'loginName.unique' => '登录账号已存在.',
+            'password.required' => '登录密码不能为空.',
+            'password.between' => '登录密码必须6到12位.',
         ];
     }
 
@@ -56,8 +53,13 @@ class StaffRequest extends FormRequest
                 }
             }
         });
-        $validator->sometimes('password', 'required', function ($input) {
+        $validator->sometimes('password', 'required|between:6,12', function ($input) {
             if (!isset($input->id)) {
+                return true;
+            }
+        });
+        $validator->sometimes('password', 'between:6,12', function ($input) {
+            if (isset($input->id) && !empty($input->password)) {
                 return true;
             }
         });

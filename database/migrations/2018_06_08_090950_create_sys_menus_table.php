@@ -17,6 +17,7 @@ class CreateSysMenusTable extends Migration
             $table->increments('id');
             $table->integer('parentId')->unsigned()->default(0);
             $table->string('name', 64);
+            $table->string('url', 64);
             $table->integer('sort')->default(0);
             $table->softDeletes();
             $table->timestamps();

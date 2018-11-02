@@ -16,27 +16,7 @@ class IndexController extends Controller
 
     public function index()
     {
-        return view('admin.base');
-    }
-
-    public function main()
-    {
-        return view('admin.default');
-    }
-
-    public function subMenus(Request $request)
-    {
-        $menuId = intval($request->get('menuId'));
-        $subMenus = SysMenu::sysMenus($menuId)->orderBy('sort')->get();
-        $subMenus->map(function($subMenu) {
-            $subChildMenu = SysMenu::sysMenus($subMenu->id)->orderBy('sort')->get();
-            $subChildMenu->map(function ($childMenu) {
-                return $childMenu->sys_leftmenu_privilige;
-            });
-            $subMenu->subChildMenu = $subChildMenu;
-            return $subMenu;
-        });
-        return $this->handleSuccess($subMenus);
+        return view('admin.index');
     }
 
     public function clearCache()

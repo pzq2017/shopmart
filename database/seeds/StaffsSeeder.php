@@ -16,7 +16,7 @@ class StaffsSeeder extends Seeder
             'password' => \Illuminate\Support\Facades\Hash::make('admin123'),
             'secretKey' => rand(1000, 9999),
             'staffRoleId' => -1,        //超级管理员
-            'staffNo' => '10000',
+            'status' => \App\Models\Staffs::STATUS_ACTIVE,
         ]);
     }
 }

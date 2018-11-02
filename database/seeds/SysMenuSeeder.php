@@ -12,31 +12,213 @@ class SysMenuSeeder extends Seeder
      */
     public function run()
     {
-        $sys_first_menus = ['首页', '运营管理', '订单管理', '店铺管理', '商品管理'];
-        $sys_second_menus = array(
-            '首页' => array('系统管理', '基础设置', '会员管理', '文章管理'),
-            '运营管理' => array('推荐管理', '财务管理'),
-            '订单管理' => array('订单管理'),
-            '店铺管理' => array('店铺管理'),
-            '商品管理' => array('商品管理'),
-        );
-        $sys_third_menus = array(
-            '系统管理' => array('菜单权限', '前台菜单', '角色管理', '职员管理', '登录日志', '操作日志', '消息管理'),
-            '基础设置' => array('商城配置', '导航管理', '广告管理', '广告位置', '银行管理', '支付管理', '地区管理', '友情链接', '快递管理'),
-            '会员管理' => array('会员等级', '会员管理', '账号管理'),
-            '文章管理' => array('文章管理', '文章分类'),
-            '推荐管理' => array('商品推荐', '店铺推荐', '品牌推荐'),
-            '财务管理' => array('提现申请', '结算申请', '商家结算'),
-            '订单管理' => array('订单管理', '投诉订单', '退款订单'),
-            '店铺管理' => array('店铺认证', '开店申请', '店铺管理', '停用店铺'),
-            '商品管理' => array('已上架商品', '待审核商品', '违规商品', '商品分类', '商品属性', '品牌管理', '商品规格', '评价管理'),
-        );
+        $sys_first_menus = [
+            [
+                'name' => '首页',
+                'url' => route('admin.index'),
+            ],
+            [
+                'name' => '运营管理',
+                'url' => route('admin.operation.index'),
+            ],
+            [
+                'name' => '订单管理',
+                'url' => route('admin.order.index'),
+            ],
+            [
+                'name' => '店铺管理',
+                'url' => route('admin.shop.index'),
+            ],
+            [
+                'name' => '商品管理',
+                'url' => route('admin.goods.index'),
+            ],
+        ];
+        $sys_second_menus = [
+            '首页' => [
+                [
+                    'name' => '系统管理',
+                    'url' => '',
+                ],
+                [
+                    'name' => '基础设置',
+                    'url' => '',
+                ],
+                [
+                    'name' => '会员管理',
+                    'url' => '',
+                ],
+                [
+                    'name' => '文章管理',
+                    'url' => '',
+                ],
+            ],
+            '运营管理' => [
+                [
+                    'name' => '推荐管理',
+                    'url' => '',
+                ],
+                [
+                    'name' => '财务管理',
+                    'url' => '',
+                ],
+            ],
+            '订单管理' => [
+                [
+                    'name' => '订单管理',
+                    'url' => '',
+                ],
+                [
+                    'name' => '投诉订单',
+                    'url' => '',
+                ],
+                [
+                    'name' => '退款订单',
+                    'url' => '',
+                ],
+            ],
+            '店铺管理' => [
+                [
+                    'name' => '店铺认证',
+                    'url' => '',
+                ],
+                [
+                    'name' => '开店申请',
+                    'url' => '',
+                ],
+                [
+                    'name' => '店铺管理',
+                    'url' => '',
+                ],
+                [
+                    'name' => '停用店铺',
+                    'url' => '',
+                ],
+            ],
+            '商品管理' => [
+                [
+                    'name' => '已上架商品',
+                    'url' => '',
+                ],
+                [
+                    'name' => '待审核商品',
+                    'url' => '',
+                ],
+                [
+                    'name' => '违规商品',
+                    'url' => '',
+                ],
+                [
+                    'name' => '商品分类',
+                    'url' => '',
+                ],
+                [
+                    'name' => '商品属性',
+                    'url' => '',
+                ],
+                [
+                    'name' => '品牌管理',
+                    'url' => '',
+                ],
+                [
+                    'name' => '商品规格',
+                    'url' => '',
+                ],
+                [
+                    'name' => '评价管理',
+                    'url' => '',
+                ],
+            ],
+        ];
+        $sys_third_menus = [
+            '系统管理' => [
+                [
+                    'name' => '管理员管理',
+                    'url' => route('admin.system.staff.index'),
+                ],
+                [
+                    'name' => '角色管理',
+                    'url' => route('admin.system.role.index'),
+                ],
+                [
+                    'name' => '登录日志',
+                    'url' => '',
+                ],
+                [
+                    'name' => '消息管理',
+                    'url' => '',
+                ],
+            ],
+            '基础设置' => [
+                [
+                    'name' => '平台配置',
+                    'url' => '',
+                ],
+                [
+                    'name' => '导航管理',
+                    'url' => '',
+                ],
+                [
+                    'name' => '广告管理',
+                    'url' => '',
+                ],
+                [
+                    'name' => '广告位置',
+                    'url' => '',
+                ],
+                [
+                    'name' => '银行管理',
+                    'url' => '',
+                ],
+                [
+                    'name' => '支付管理',
+                    'url' => '',
+                ],
+                [
+                    'name' => '地区管理',
+                    'url' => '',
+                ],
+                [
+                    'name' => '友情链接',
+                    'url' => '',
+                ],
+                [
+                    'name' => '快递管理',
+                    'url' => '',
+                ],
+            ],
+            '会员管理' => [
+                [
+                    'name' => '会员等级',
+                    'url' => '',
+                ],
+                [
+                    'name' => '会员管理',
+                    'url' => '',
+                ],
+                [
+                    'name' => '账号管理',
+                    'url' => '',
+                ],
+            ],
+            '文章管理' => [
+                [
+                    'name' => '文章管理',
+                    'url' => '',
+                ],
+                [
+                    'name' => '文章分类',
+                    'url' => '',
+                ],
+            ],
+        ];
 
         //创建一级菜单
         foreach ($sys_first_menus as $menu) {
             SysMenu::create([
                 'parentId' => 0,
-                'name' => $menu,
+                'name' => $menu['name'],
+                'url' => $menu['url'],
             ]);
         }
 
@@ -47,7 +229,8 @@ class SysMenuSeeder extends Seeder
                 foreach ($menus as $menu) {
                     SysMenu::create([
                         'parentId' => $parentId,
-                        'name' => $menu,
+                        'name' => $menu['name'],
+                        'url' => $menu['url'],
                     ]);
                 }
             }
@@ -60,7 +243,8 @@ class SysMenuSeeder extends Seeder
                 foreach ($menus as $menu) {
                     SysMenu::create([
                         'parentId' => $parentId,
-                        'name' => $menu,
+                        'name' => $menu['name'],
+                        'url' => $menu['url'],
                     ]);
                 }
             }
