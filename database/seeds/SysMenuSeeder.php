@@ -142,7 +142,7 @@ class SysMenuSeeder extends Seeder
                 ],
                 [
                     'name' => '登录日志',
-                    'url' => '',
+                    'url' => route('admin.system.log.index'),
                 ],
                 [
                     'name' => '消息管理',

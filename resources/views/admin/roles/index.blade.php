@@ -4,12 +4,8 @@
         <div class="layui-row layui-col-space15">
             <div class="layui-col-md12">
                 <div class="layui-card" id="content_box">
-                    <div class="layui-card-header">
-                        <div class="layui-btn-group btn-handle-group">
-                            <button class="layui-btn" onclick="Edit(0)">新增</button>
-                        </div>
-                    </div>
                     <div class="layui-card-body">
+                        <div><button class="layui-btn" onclick="Edit(0)">新增</button></div>
                         <table class="layui-hide" id="list-datas" lay-filter="list-datas"></table>
                     </div>
                 </div>
@@ -18,7 +14,7 @@
     </div>
 </div>
 <script type="text/html" id="actionBar">
-    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
 <script type="text/javascript">

@@ -22,22 +22,25 @@ class LogsController extends Controller
     public function lists(Request $request)
     {
         $request = $this->arrange($request);
-        $logs = LogStaffLogin::with(['staff' => function ($query) use ($request) {
-            if ($request->loginName) {
-                return $query->where('loginName', $request->loginName);
-            }
-        }])
+        $startDate = null;
+        $endDate = null;
+        if (!empty($request->dateRange)) {
+            $dateArr = explode('~', $request->dateRange);
+            $startDate = $dateArr[0];
+            $endDate = $dateArr[1];
+        }
+        $logs = LogStaffLogin::with('staff')
             ->whereHas('staff', function ($query) use ($request) {
                 if ($request->loginName) {
                     return $query->where('loginName', $request->loginName);
                 }
             })
-            ->when($request->startDate, function ($query) use ($request) {
-                $startDate_time = Carbon::parse($request->startDate)->timestamp;
+            ->when($startDate, function ($query) use ($startDate) {
+                $startDate_time = Carbon::parse($startDate)->timestamp;
                 return $query->whereRaw("UNIX_TIMESTAMP(created_at) >= $startDate_time");
             })
-            ->when($request->endDate, function ($query) use ($request) {
-                $endDate_time = Carbon::parse($request->endDate)->timestamp + 24 * 3600;
+            ->when($endDate, function ($query) use ($endDate) {
+                $endDate_time = Carbon::parse($endDate)->timestamp;
                 return $query->whereRaw("UNIX_TIMESTAMP(created_at) < $endDate_time");
             })
             ->skip($request->offset)

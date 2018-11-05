@@ -19,6 +19,16 @@ Route::group(['middleware' => ['admin.auth'], 'namespace' => 'Admin'], function 
 
         Route::resource('role', 'RolesController')->except('show');
         Route::get('role/lists', 'RolesController@lists')->name('role.lists');
+
+        Route::get('/log/index', 'LogsController@index')->name('log.index');
+        Route::get('/log/lists', 'LogsController@lists')->name('log.lists');
+    });
+
+    /**
+     * 基础设置
+     */
+    Route::group(['namespace' => 'Config', 'prefix' => '/config/', 'as' => 'config.'], function () {
+
     });
 
     /**

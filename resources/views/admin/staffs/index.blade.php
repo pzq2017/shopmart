@@ -4,13 +4,36 @@
         <div class="layui-row layui-col-space15">
             <div class="layui-col-md12">
                 <div class="layui-card" id="content_box">
-                    <div class="layui-card-header">
-                        <div class="layui-btn-group btn-handle-group">
-                            <button class="layui-btn" onclick="Edit(0)">新增</button>
-                            <button class="layui-btn layui-btn-normal" onclick="Search()">搜索</button>
-                        </div>
+                    <div class="layui-form layui-card-header card-header-auto">
+                        <form name="staffSearch" onsubmit="return false;">
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">登录账号</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="loginName" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">所属角色</label>
+                                    <div class="layui-input-block">
+                                        <select name="staffRoleId">
+                                            <option value="">请选择角色</option>
+                                            @foreach($roles as $role)
+                                                <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <button class="layui-btn" onclick="Search();">
+                                        <i class="layui-icon layui-icon-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                     <div class="layui-card-body">
+                        <div><button class="layui-btn" onclick="Edit(0)">新增</button></div>
                         <table class="layui-hide" id="list-datas" lay-filter="list-datas"></table>
                     </div>
                 </div>
@@ -19,10 +42,9 @@
     </div>
 </div>
 <script type="text/html" id="actionBar">
-    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
-<script></script>
 <script type="text/javascript">
     var params = {'_token': baseParams.csrf_token};
     function Lists() {
@@ -123,18 +145,21 @@
         })
     }
 
-    function Search() {
-        var dialog = Qk.open({
-            title: '管理员搜索',
-            type: 1,
-            area: ['340px', '230px'],
-            offset: '150px',
-            content: '',
-            btn: ['搜索', '取消'],
-            yes: function (index, layero) {
+    layui.use('form', function () {
+        layui.form.render();
+    })
 
-            }
-        })
+    function Search() {
+        if (params.loginName)
+            params.loginName = '';
+        if (params.staffRoleId)
+            params.staffRoleId = '';
+        var form = document.forms['staffSearch'];
+        if (form.loginName.value)
+            params.loginName = form.loginName.value;
+        if (form.staffRoleId.value)
+            params.staffRoleId = form.staffRoleId.value;
+        Lists();
     }
 
     $(document).ready(function () {

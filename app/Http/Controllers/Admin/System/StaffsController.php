@@ -20,7 +20,8 @@ class StaffsController extends Controller
 
     public function index(Request $request)
     {
-        return view('admin.staffs.index');
+        $roles = Roles::all();
+        return view('admin.staffs.index', compact('roles'));
     }
 
     public function lists(Request $request)
@@ -29,9 +30,6 @@ class StaffsController extends Controller
         $staffs = Staffs::with('role')
             ->when($request->loginName, function ($query) use ($request) {
                 return $query->where('loginName', $request->loginName);
-            })
-            ->when($request->staffName, function ($query) use ($request) {
-                return $query->where('staffName', $request->staffName);
             })
             ->when($request->staffRoleId, function ($query) use ($request) {
                 return $query->where('staffRoleId', $request->staffRoleId);
