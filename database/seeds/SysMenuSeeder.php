@@ -152,31 +152,31 @@ class SysMenuSeeder extends Seeder
             '基础设置' => [
                 [
                     'name' => '平台配置',
-                    'url' => '',
+                    'url' => route('admin.config.platform.index'),
                 ],
                 [
                     'name' => '导航管理',
-                    'url' => '',
+                    'url' => route('admin.config.nav.index'),
                 ],
                 [
                     'name' => '广告管理',
-                    'url' => '',
+                    'url' => route('admin.config.ad.index'),
                 ],
                 [
                     'name' => '广告位置',
-                    'url' => '',
+                    'url' => route('admin.config.ad_position.index'),
                 ],
                 [
                     'name' => '银行管理',
-                    'url' => '',
+                    'url' => route('admin.config.bank.index'),
                 ],
                 [
                     'name' => '支付管理',
-                    'url' => '',
+                    'url' => route('admin.config.payment_config.index'),
                 ],
                 [
                     'name' => '地区管理',
-                    'url' => '',
+                    'url' => route('admin.config.area.index'),
                 ],
                 [
                     'name' => '友情链接',

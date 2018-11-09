@@ -11,7 +11,7 @@
     <script src="/js/common.js" type="text/javascript"></script>
     <script src="/js/admin/base.js" type="text/javascript"></script>
     <script>
-        var baseParams = {csrf_token: '{{ csrf_token() }}', upload_url: '{{ route('admin.sigupload.picture') }}'};
+        var baseParams = {csrf_token: '{{ csrf_token() }}', upload_url: '{{ route('admin.sigupload.upload') }}'};
     </script>
 </head>
 <body class="layui-layout-body">

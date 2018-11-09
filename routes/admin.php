@@ -4,7 +4,7 @@ Route::get('/login', 'Admin\LoginController@index')->name('login');
 Route::post('/login', 'Admin\LoginController@login')->name('checkLogin');
 
 Route::group(['middleware' => ['admin.auth'], 'namespace' => 'Admin'], function () {
-    Route::post('/sigupload/picture', 'SiguploadController@picture')->name('sigupload.picture');
+    Route::post('/sigupload/upload', 'SiguploadController@upload')->name('sigupload.upload');
     /**
      * 首页
      */
@@ -28,7 +28,30 @@ Route::group(['middleware' => ['admin.auth'], 'namespace' => 'Admin'], function 
      * 基础设置
      */
     Route::group(['namespace' => 'Config', 'prefix' => '/config/', 'as' => 'config.'], function () {
+        Route::get('/platform', 'PlatformController@index')->name('platform.index');
+        Route::post('/platform/save', 'PlatformController@save')->name('platform.save');
 
+        Route::resource('nav', 'NavsController')->except('show');
+        Route::get('nav/lists', 'NavsController@lists')->name('nav.lists');
+
+        Route::resource('ad', 'AdsController')->except('show');
+        Route::get('ad/lists', 'AdsController@lists')->name('ad.lists');
+        Route::put('ad/{ad}/update_publish_date', 'AdsController@update_publish_date')->name('ad.update_publish_date');
+
+        Route::resource('ad_position', 'AdPositionsController')->except('show');
+        Route::get('ad_position/lists', 'AdPositionsController@lists')->name('ad_position.lists');
+
+        Route::resource('bank', 'BanksController')->except('show');
+        Route::get('bank/lists', 'BanksController@lists')->name('bank.lists');
+        Route::put('bank/{bank}/update_status', 'BanksController@update_status')->name('bank.update_status');
+
+        Route::resource('payment_config', 'PaymentConfigController')->only(['index', 'edit', 'update']);
+        Route::get('payment_config/lists', 'PaymentConfigController@lists')->name('payment_config.lists');
+        Route::put('payment_config/{payment_config}/enabled', 'PaymentConfigController@enabled')->name('payment_config.enabled');
+        Route::put('payment_config/{payment_config}/debug', 'PaymentConfigController@debug')->name('payment_config.debug');
+
+        Route::resource('area', 'AreaController')->except('show');
+        Route::get('area/lists', 'AreaController@lists')->name('area.lists');
     });
 
     /**

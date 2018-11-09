@@ -76,25 +76,30 @@ function alertErrors(errors) {
     }
 }
 
-function uploadFile(objId, picId, acceptType, acceptExts, psize, handleType) {
+function uploadFile(objId, acceptType, acceptExts, pSize, handleType) {
+    if (!pSize) pSize = '';
+    if (!handleType) handleType = '';
     layui.use('upload', function () {
         var load;
         layui.upload.render({
-            elem: '#' + objId,
+            elem: '#' + objId + '_upload',
             url: baseParams.upload_url,
             headers: {'X-CSRF-TOKEN': baseParams.csrf_token},
             size: Qk.maxUploadSize,     //KB
             accept: acceptType,         //images, file, video, audio
             exts: acceptExts,
-            data: {psize: psize, handleType: handleType},
+            data: {type: acceptType, pSize: pSize, handleType: handleType},
             before: function(obj){
                 load = Qk.loading();
             },
             done: function(res){
                 Qk.close(load);
                 if (res.status == 'success') {
-                    $('#' + picId + '_preview').attr('src', '/file/temp/' + res.message);
-                    $('#' + picId + '_value').val(res.message);
+                    if (acceptType == 'images') {
+                        $('#' + objId + '_preview').attr('src', '/file/temp/' + res.message);
+                        $('#' + objId + '_preview').parent().removeClass('hidden');
+                    }
+                    $('#' + objId + '_value').val(res.message);
                 } else {
                     if (res.info) {
                         Qk.msg(res.info, {icon: 2});

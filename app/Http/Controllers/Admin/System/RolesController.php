@@ -24,12 +24,9 @@ class RolesController extends Controller
 
     public function lists(Request $request)
     {
-        $request = $this->arrange($request);
-        $roles = Roles::skip($request->offset)
-            ->take($request->limit)
-            ->orderBy($request->sortname, $request->sort)
-            ->get();
-        return $this->handleSuccess($roles);
+        $query = Roles::where('id', '>', 0);
+        $roles = $this->pagination($query, $request);
+        return $this->handleSuccess(['total' => $query->count(), 'lists' => $roles]);
     }
 
     public function create()

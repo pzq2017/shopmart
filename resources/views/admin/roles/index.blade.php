@@ -32,7 +32,8 @@
                 parseData: function (res) {
                     return {
                         "code" : 0,
-                        "data" : res.message
+                        "data" : res.message.lists,
+                        "count": res.message.total,
                     }
                 },
                 cols: [[
@@ -45,7 +46,6 @@
                 text: {
                     none: '暂无数据...'
                 },
-                even: true,
             });
 
             table.on('tool(list-datas)', function (obj) {

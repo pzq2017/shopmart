@@ -4,7 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class MessagesRequest extends FormRequest
+class NavsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,14 +24,19 @@ class MessagesRequest extends FormRequest
     public function rules()
     {
         return [
-            'message' => 'required',
+            'type' => 'required|integer',
+            'name' => 'required',
+            'url' => 'required',
         ];
     }
 
     public function messages()
     {
         return [
-            'message.required' => '消息内容不能为空.',
+            'type.required' => '请选择导航类型',
+            'type.integer' => '请选择正确的导航类型',
+            'name.required' => '导航名称不能为空',
+            'url.required' => '导航链接不能为空',
         ];
     }
 }

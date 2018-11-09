@@ -26,19 +26,15 @@ class StaffsController extends Controller
 
     public function lists(Request $request)
     {
-        $request = $this->arrange($request);
-        $staffs = Staffs::with('role')
+        $query = Staffs::with('role')
             ->when($request->loginName, function ($query) use ($request) {
                 return $query->where('loginName', $request->loginName);
             })
             ->when($request->staffRoleId, function ($query) use ($request) {
                 return $query->where('staffRoleId', $request->staffRoleId);
-            })
-            ->skip($request->offset)
-            ->take($request->limit)
-            ->orderBy($request->sortname, $request->sort)
-            ->get();
-        return $this->handleSuccess($staffs);
+            });
+        $staffs = $this->pagination($query, $request);
+        return $this->handleSuccess(['total' => $query->count(), 'lists' => $staffs]);
     }
 
     public function create()

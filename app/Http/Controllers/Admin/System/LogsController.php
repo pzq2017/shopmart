@@ -21,7 +21,6 @@ class LogsController extends Controller
 
     public function lists(Request $request)
     {
-        $request = $this->arrange($request);
         $startDate = null;
         $endDate = null;
         if (!empty($request->dateRange)) {
@@ -29,7 +28,7 @@ class LogsController extends Controller
             $startDate = $dateArr[0];
             $endDate = $dateArr[1];
         }
-        $logs = LogStaffLogin::with('staff')
+        $query = LogStaffLogin::with('staff')
             ->whereHas('staff', function ($query) use ($request) {
                 if ($request->loginName) {
                     return $query->where('loginName', $request->loginName);
@@ -42,11 +41,8 @@ class LogsController extends Controller
             ->when($endDate, function ($query) use ($endDate) {
                 $endDate_time = Carbon::parse($endDate)->timestamp;
                 return $query->whereRaw("UNIX_TIMESTAMP(created_at) < $endDate_time");
-            })
-            ->skip($request->offset)
-            ->take($request->limit)
-            ->orderBy($request->sortname, $request->sort)
-            ->get();
-        return $this->handleSuccess($logs);
+            });
+        $logs = $this->pagination($query, $request);
+        return $this->handleSuccess(['total' => $query->count(), 'lists' => $logs]);
     }
 }

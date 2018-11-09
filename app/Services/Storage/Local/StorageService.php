@@ -20,6 +20,9 @@ class StorageService
     {
         if ($this->exist($fromFile)) {
             $toFile = $this->getTargetFilePath($fromFile, $toFile);
+            if ($this->exist($toFile)) {
+                $this->delete($toFile);
+            }
             if (\Storage::copy($fromFile, $toFile)) {
                 return $toFile;
             }
@@ -31,6 +34,9 @@ class StorageService
     {
         if ($this->exist($fromFile)) {
             $toFile = $this->getTargetFilePath($fromFile, $toFile);
+            if ($this->exist($toFile)) {
+                $this->delete($toFile);
+            }
             if (\Storage::move($fromFile, $toFile)) {
                 return $toFile;
             }

@@ -113,5 +113,5 @@
         });
     })
 
-    uploadFile('headpic_upload', 'headpic', 'images', 'jpg|png|gif|jpeg', '200*200', 1);
+    uploadFile('headpic', 'images', 'jpg|png|gif|jpeg', '200*200', 1);
 </script>
