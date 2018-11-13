@@ -180,7 +180,7 @@ class SysMenuSeeder extends Seeder
                 ],
                 [
                     'name' => '友情链接',
-                    'url' => '',
+                    'url' => route('admin.config.friend_link.index'),
                 ],
                 [
                     'name' => '快递管理',

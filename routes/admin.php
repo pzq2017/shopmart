@@ -52,6 +52,10 @@ Route::group(['middleware' => ['admin.auth'], 'namespace' => 'Admin'], function 
 
         Route::resource('area', 'AreaController')->except('show');
         Route::get('area/lists', 'AreaController@lists')->name('area.lists');
+
+        Route::resource('friend_link', 'FriendLinksController')->except('show');
+        Route::get('friend_link/lists', 'FriendLinksController@lists')->name('friend_link.lists');
+        Route::put('friend_link/{friend_link}/is_show', 'FriendLinksController@isShow')->name('friend_link.is_show');
     });
 
     /**

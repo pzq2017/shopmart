@@ -17,11 +17,7 @@ class AreaController extends Controller
     public function index(Request $request)
     {
         $pid = $request->pid ?? 0;
-        if ($pid > 0) {
-            $prev_pid = Area::where('id', $pid)->value('pid');
-        } else {
-            $prev_pid = $pid;
-        }
+        $prev_pid = Area::getPrevPid($pid);
         return view('admin.config.areas.index', compact('pid', 'prev_pid'));
     }
 
@@ -29,13 +25,13 @@ class AreaController extends Controller
     {
         $pid = intval($request->pid) ?? 0;
         $type = Area::getType($pid);
-        $query = Area::where('pid', $pid)
+        $prev_pid = Area::getPrevPid($pid);
+        $areas = Area::where('pid', $pid)
                 ->where('type', $type)
                 ->when($request->name, function ($query) use ($request) {
                     return $query->where('name', 'like', '%'.$request->name.'%');
-                });
-        $areas = $this->pagination($query, $request);
-        return $this->handleSuccess(['total' => $query->count(), 'lists' => $areas]);
+                })->get();
+        return $this->handleSuccess(['lists' => $areas, 'prev_pid' => $prev_pid]);
     }
 
     public function create(Request $request)

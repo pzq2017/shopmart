@@ -33,4 +33,14 @@ class Area extends Model
         }
         return $type;
     }
+
+    public static function getPrevPid($pid)
+    {
+        if ($pid > 0) {
+            $prev_pid = self::where('id', $pid)->value('pid');
+        } else {
+            $prev_pid = $pid;
+        }
+        return $prev_pid;
+    }
 }
