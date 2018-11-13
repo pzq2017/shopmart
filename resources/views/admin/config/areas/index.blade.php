@@ -92,21 +92,21 @@
     }
 
     function Edit(id) {
-        var url = id ? Qk.getRealRoutePath('{{ route_uri('admin.config.area.edit') }}', {area: id}) : Qk.getRealRoutePath('{{ route_uri('admin.config.area.create') }}', {pid: params.pid});
-        Qk.loadPage(url, {}, function (page) {
+        var url = id ? Common.getRealRoutePath('{{ route_uri('admin.config.area.edit') }}', {area: id}) : Common.getRealRoutePath('{{ route_uri('admin.config.area.create') }}', {pid: params.pid});
+        Common.loadPage(url, {}, function (page) {
             $('#content_box').html(page);
         });
     }
 
     function Save(id, form_datas) {
-        var saveUrl = id > 0 ? Qk.getRealRoutePath('{{ route_uri('admin.config.area.update') }}', {area: id}) : '{{ route('admin.config.area.store') }}';
-        Qk.ajaxRequest(saveUrl, form_datas, (id > 0 ? 'PUT' : 'POST'), function (data) {
+        var saveUrl = id > 0 ? Common.getRealRoutePath('{{ route_uri('admin.config.area.update') }}', {area: id}) : '{{ route('admin.config.area.store') }}';
+        Common.ajaxRequest(saveUrl, form_datas, (id > 0 ? 'PUT' : 'POST'), function (data) {
             if (data.status == 'success') {
-                Qk.msg('保存成功!', {icon: 1}, function () {
-                    goBack(Qk.getRealRoutePath('{{ route_uri('admin.config.area.index') }}', {pid: params.pid}));
+                Common.msg('保存成功!', {icon: 1}, function () {
+                    goBack(Common.getRealRoutePath('{{ route_uri('admin.config.area.index') }}', {pid: params.pid}));
                 });
             } else {
-                Qk.msg(data.info, {icon: 2});
+                Common.msg(data.info, {icon: 2});
             }
         }, function (errors) {
             alertErrors(errors);
@@ -114,22 +114,22 @@
     }
 
     function Delete(id) {
-        var confirm_dialog = Qk.confirm({
+        var confirm_dialog = Common.confirm({
             title: '删除地区',
             content: '您确定要删除当前地区信息吗？',
             yes: function () {
-                loading = Qk.msg('正在删除中,请稍后...', {icon: 16, time: 60000});
-                Qk.ajaxRequest(Qk.getRealRoutePath('{{ route_uri('admin.config.area.destroy') }}', {area: id}), null, 'DELETE', function (data) {
+                loading = Common.msg('正在删除中,请稍后...', {icon: 16, time: 60000});
+                Common.ajaxRequest(Common.getRealRoutePath('{{ route_uri('admin.config.area.destroy') }}', {area: id}), null, 'DELETE', function (data) {
                     if (data.status == 'success') {
-                        Qk.close(confirm_dialog);
-                        Qk.msg("删除成功！", {icon: 1}, function () {
+                        Common.close(confirm_dialog);
+                        Common.msg("删除成功！", {icon: 1}, function () {
                             Lists();
                         });
                     } else {
-                        Qk.msg(data.info, {icon: 2});
+                        Common.msg(data.info, {icon: 2});
                     }
                 }, function (errors) {
-                    Qk.msg(errors, {icon: 2});
+                    Common.msg(errors, {icon: 2});
                 });
             }
         })

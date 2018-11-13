@@ -45,8 +45,8 @@
                 url: '{{ route('admin.system.log.lists') }}',
                 where: params,
                 page: true,
-                limit: Qk.defaultPageSize,
-                limits: Qk.defaultPageSizeOptions,
+                limit: Const.defaultPageSize,
+                limits: Const.defaultPageSizeOptions,
                 parseData: function (res) {
                     return {
                         "code" : 0,

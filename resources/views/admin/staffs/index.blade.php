@@ -48,75 +48,49 @@
 <script type="text/javascript">
     var params = {'_token': baseParams.csrf_token};
     function Lists() {
-        layui.use('table', function () {
-            var table = layui.table;
-            table.render({
-                elem: '#list-datas',
-                url: '{{ route('admin.system.staff.lists') }}',
-                where: params,
-                page: true,
-                limit: Qk.defaultPageSize,
-                limits: Qk.defaultPageSizeOptions,
-                parseData: function (res) {
-                    return {
-                        "code" : 0,
-                        "data" : res.message.lists,
-                        "count": res.message.total,
-                    }
-                },
-                cols: [[
-                    {field: 'id', title: 'ID', sort: true, width: 60, align: 'center'},
-                    {field: 'loginName', title: '账号', align: 'center'},
-                    {field: 'staffName', title: '姓名', align: 'center'},
-                    {field: 'staffPhone', title: '电话', align: 'center'},
-                    {field: 'staffRoleId', title: '权限', align: 'center', templet: function (d) {
-                        if (d.staffRoleId == {{ \App\Models\Staffs::SUPER_USER }}) {
-                            return '超管';
-                        } else {
-                            if (d.role) {
-                                return d.role.name;
-                            }
-                            return '';
+        Common.tableRender({
+            url: '{{ route('admin.system.staff.lists') }}',
+            where: params,
+            cols: [[
+                {field: 'id', title: 'ID', sort: true, width: 60, align: 'center'},
+                {field: 'loginName', title: '账号', align: 'center'},
+                {field: 'staffName', title: '姓名', align: 'center'},
+                {field: 'staffPhone', title: '电话', align: 'center'},
+                {field: 'staffRoleId', title: '权限', align: 'center', templet: function (d) {
+                    if (d.staffRoleId == {{ \App\Models\Staffs::SUPER_USER }}) {
+                        return '超管';
+                    } else {
+                        if (d.role) {
+                            return d.role.name;
                         }
-                    }},
-                    {field: 'status', title: '状态',sort: true, align: 'center', templet: function (d) {
-                        return (d.status == {{ \App\Models\Staffs::STATUS_ACTIVE }}) ? '已激活' : '未激活';
-                    }},
-                    {field: 'created_at', title: '创建日期',sort: true, width: 200, align: 'center'},
-                    {title: '操作', toolbar: '#actionBar', width: 150, align: 'center'},
-                ]],
-                text: {
-                    none: '暂无数据...'
-                },
-            });
-
-            table.on('tool(list-datas)', function (obj) {
-                var event = obj.event, data = obj.data;
-                if (event == 'edit') {
-                    Edit(data.id);
-                } else if (event == 'del') {
-                    Delete(data.id);
-                }
-            })
-        })
+                        return '';
+                    }
+                }},
+                {field: 'status', title: '状态',sort: true, align: 'center', templet: function (d) {
+                    return (d.status == {{ \App\Models\Staffs::STATUS_ACTIVE }}) ? '已激活' : '未激活';
+                }},
+                {field: 'created_at', title: '创建日期',sort: true, width: 200, align: 'center'},
+                {title: '操作', toolbar: '#actionBar', width: 150, align: 'center'},
+            ]],
+        });
     }
 
     function Edit(id) {
-        var url = id ? Qk.getRealRoutePath('{{ route_uri('admin.system.staff.edit') }}', {'staff': id}) : '{{ route('admin.system.staff.create') }}';
-        Qk.loadPage(url, {}, function (page) {
+        var url = id ? Common.getRealRoutePath('{{ route_uri('admin.system.staff.edit') }}', {'staff': id}) : '{{ route('admin.system.staff.create') }}';
+        Common.loadPage(url, {}, function (page) {
             $('#content_box').html(page);
         });
     }
 
     function Save(id, form_datas) {
-        var saveUrl = id > 0 ? Qk.getRealRoutePath('{{ route_uri('admin.system.staff.update') }}', {staff: id}) : '{{ route('admin.system.staff.store') }}';
-        Qk.ajaxRequest(saveUrl, form_datas, (id > 0 ? 'PUT' : 'POST'), function (data) {
+        var saveUrl = id > 0 ? Common.getRealRoutePath('{{ route_uri('admin.system.staff.update') }}', {staff: id}) : '{{ route('admin.system.staff.store') }}';
+        Common.ajaxRequest(saveUrl, form_datas, (id > 0 ? 'PUT' : 'POST'), function (data) {
             if (data.status == 'success') {
-                Qk.msg('保存成功!', {icon: 1}, function () {
+                Common.msg('保存成功!', {icon: 1}, function () {
                     goBack('{{ route('admin.system.staff.index') }}');
                 });
             } else {
-                Qk.msg(data.info, {icon: 2});
+                Common.msg(data.info, {icon: 2});
             }
         }, function (errors) {
             alertErrors(errors);
@@ -124,22 +98,22 @@
     }
 
     function Delete(id) {
-        var confirm_dialog = Qk.confirm({
+        var confirm_dialog = Common.confirm({
             title: '删除管理员',
             content: '您确定要删除当前管理员账号吗？',
             yes: function () {
-                loading = Qk.msg('正在删除中,请稍后...', {icon: 16, time: 60000});
-                Qk.ajaxRequest(Qk.getRealRoutePath('{{ route_uri('admin.system.staff.destroy') }}', {staff: id}), null, 'DELETE', function (data) {
+                loading = Common.msg('正在删除中,请稍后...', {icon: 16, time: 60000});
+                Common.ajaxRequest(Common.getRealRoutePath('{{ route_uri('admin.system.staff.destroy') }}', {staff: id}), null, 'DELETE', function (data) {
                     if (data.status == 'success') {
-                        Qk.close(confirm_dialog);
-                        Qk.msg("删除成功！", {icon: 1}, function () {
+                        Common.close(confirm_dialog);
+                        Common.msg("删除成功！", {icon: 1}, function () {
                             Lists();
                         });
                     } else {
-                        Qk.msg(data.info, {icon: 2});
+                        Common.msg(data.info, {icon: 2});
                     }
                 }, function (errors) {
-                    Qk.msg(errors, {icon: 2});
+                    Common.msg(errors, {icon: 2});
                 });
             }
         })

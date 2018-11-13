@@ -1,24 +1,24 @@
 function goBack(backurl) {
-    Qk.loadPage(backurl, {}, function (page) {
+    Common.loadPage(backurl, {}, function (page) {
         $('#content_body').html(page);
     })
 }
 
 function clearCache() {
-    loading = Qk.msg('正在清除缓存，请稍后...', {icon: 16, time: 60000});
-    Qk.ajaxRequest(window.params.clearCacheUrl, null, 'GET', function (data) {
+    loading = Common.msg('正在清除缓存，请稍后...', {icon: 16, time: 60000});
+    Common.ajaxRequest(window.params.clearCacheUrl, null, 'GET', function (data) {
         if (data.status == 'success') {
-            Qk.msg('缓存已成功清除', {icon: 1});
+            Common.msg('缓存已成功清除', {icon: 1});
         } else {
-            Qk.msg(data.info, {icon: 2});
+            Common.msg(data.info, {icon: 2});
         }
     }, function (errors) {
-        Qk.msg('清除缓存操作失败', {icon: 2});
+        Common.msg('清除缓存操作失败', {icon: 2});
     });
 }
 
 function editPwd() {
-    var dialog = Qk.open({
+    var dialog = Common.open({
         title: '修改密码', 
         type: 1,
         area: ['340px', '230px'],
@@ -26,24 +26,24 @@ function editPwd() {
         content: $('#editPwdBox').html(),
         btn: ['确定', '取消'],
         yes: function (index, layero) {
-            var post = Qk.getParams('.ipwd');
-            loading = Qk.msg('正在提交数据，请稍后...', {icon: 16, time: 60000});
-            Qk.ajaxRequest(window.params.updPwdUrl, post, 'POST', function (data) {
+            var post = Common.getParams('.ipwd');
+            loading = Common.msg('正在提交数据，请稍后...', {icon: 16, time: 60000});
+            Common.ajaxRequest(window.params.updPwdUrl, post, 'POST', function (data) {
                 if (data.status == 'success') {
-                    Qk.msg('修改成功!', {icon: 1});
+                    Common.msg('修改成功!', {icon: 1});
                     $('#editPwdForm')[0].reset();
-                    Qk.close(dialog);
+                    Common.close(dialog);
                 } else {
-                    Qk.msg(data.info, {icon: 2});
+                    Common.msg(data.info, {icon: 2});
                 }
             }, function (errors) {
                 if (typeof(errors) == 'object') {
                     for (var error in errors) {
-                        Qk.msg(errors[error][0], {icon: 2});
+                        Common.msg(errors[error][0], {icon: 2});
                         return;
                     }
                 } else {
-                    Qk.msg(errors, {icon: 2});
+                    Common.msg(errors, {icon: 2});
                 }
             });
         }
@@ -51,28 +51,28 @@ function editPwd() {
 }
 
 function logout() {
-    loading = Qk.msg('正在退出账号，请稍后...', {icon: 16, time: 60000});
-    Qk.ajaxRequest(window.params.logoutUrl, null, 'GET', function (data) {
+    loading = Common.msg('正在退出账号，请稍后...', {icon: 16, time: 60000});
+    Common.ajaxRequest(window.params.logoutUrl, null, 'GET', function (data) {
         if (data.status == 'success') {
-            Qk.msg('账号已成功退出', {icon: 1}, function () {
+            Common.msg('账号已成功退出', {icon: 1}, function () {
                 location.href = '/admin/login';
             })
         } else {
-            Qk.msg(data.info, {icon: 2});
+            Common.msg(data.info, {icon: 2});
         }
     }, function (errors) {
-        Qk.msg('账号退出异常', {icon: 2});
+        Common.msg('账号退出异常', {icon: 2});
     });
 }
 
 function alertErrors(errors) {
     if (typeof(errors) == 'object') {
         for (var error in errors) {
-            Qk.msg(errors[error][0], {icon: 2});
+            Common.msg(errors[error][0], {icon: 2});
             return;
         }
     } else {
-        Qk.msg(errors, {icon: 2});
+        Common.msg(errors, {icon: 2});
     }
 }
 
@@ -85,15 +85,15 @@ function uploadFile(objId, acceptType, acceptExts, pSize, handleType) {
             elem: '#' + objId + '_upload',
             url: baseParams.upload_url,
             headers: {'X-CSRF-TOKEN': baseParams.csrf_token},
-            size: Qk.maxUploadSize,     //KB
+            size: Const.maxUploadSize,     //KB
             accept: acceptType,         //images, file, video, audio
             exts: acceptExts,
             data: {type: acceptType, pSize: pSize, handleType: handleType},
             before: function(obj){
-                load = Qk.loading();
+                load = Common.loading();
             },
             done: function(res){
-                Qk.close(load);
+                Common.close(load);
                 if (res.status == 'success') {
                     if (acceptType == 'images') {
                         $('#' + objId + '_preview').attr('src', '/file/temp/' + res.message);
@@ -102,15 +102,15 @@ function uploadFile(objId, acceptType, acceptExts, pSize, handleType) {
                     $('#' + objId + '_value').val(res.message);
                 } else {
                     if (res.info) {
-                        Qk.msg(res.info, {icon: 2});
+                        Common.msg(res.info, {icon: 2});
                     } else {
-                        Qk.msg('上传失败.', {icon: 2});
+                        Common.msg('上传失败.', {icon: 2});
                     }
                 }
             },
             error: function(){
-                Qk.close(load);
-                Qk.msg('上传失败.', {icon: 2});
+                Common.close(load);
+                Common.msg('上传失败.', {icon: 2});
             }
         });
     })

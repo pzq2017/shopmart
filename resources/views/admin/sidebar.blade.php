@@ -23,7 +23,7 @@
         $('.menu_item').click(function () {
             var target_url = $(this).attr('url');
             if (!target_url) return;
-            Qk.loadPage(target_url, {}, function (page) {
+            Common.loadPage(target_url, {}, function (page) {
                 $('#content_body').html(page);
             })
         });

@@ -54,8 +54,8 @@
                 url: '{{ route('admin.config.nav.lists') }}',
                 where: params,
                 page: true,
-                limit: Qk.defaultPageSize,
-                limits: Qk.defaultPageSizeOptions,
+                limit: Const.defaultPageSize,
+                limits: Const.defaultPageSizeOptions,
                 parseData: function (res) {
                     return {
                         "code" : 0,
@@ -95,21 +95,21 @@
     }
 
     function Edit(id) {
-        var url = id ? Qk.getRealRoutePath('{{ route_uri('admin.config.nav.edit') }}', {'nav': id}) : '{{ route('admin.config.nav.create') }}';
-        Qk.loadPage(url, {}, function (page) {
+        var url = id ? Common.getRealRoutePath('{{ route_uri('admin.config.nav.edit') }}', {'nav': id}) : '{{ route('admin.config.nav.create') }}';
+        Common.loadPage(url, {}, function (page) {
             $('#content_box').html(page);
         });
     }
 
     function Save(id, form_datas) {
-        var saveUrl = id > 0 ? Qk.getRealRoutePath('{{ route_uri('admin.config.nav.update') }}', {nav: id}) : '{{ route('admin.config.nav.store') }}';
-        Qk.ajaxRequest(saveUrl, form_datas, (id > 0 ? 'PUT' : 'POST'), function (data) {
+        var saveUrl = id > 0 ? Common.getRealRoutePath('{{ route_uri('admin.config.nav.update') }}', {nav: id}) : '{{ route('admin.config.nav.store') }}';
+        Common.ajaxRequest(saveUrl, form_datas, (id > 0 ? 'PUT' : 'POST'), function (data) {
             if (data.status == 'success') {
-                Qk.msg('保存成功!', {icon: 1}, function () {
+                Common.msg('保存成功!', {icon: 1}, function () {
                     goBack('{{ route('admin.config.nav.index') }}');
                 });
             } else {
-                Qk.msg(data.info, {icon: 2});
+                Common.msg(data.info, {icon: 2});
             }
         }, function (errors) {
             alertErrors(errors);

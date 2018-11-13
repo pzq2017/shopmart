@@ -44,8 +44,8 @@
                 url: '{{ route('admin.config.friend_link.lists') }}',
                 where: params,
                 page: true,
-                limit: Qk.defaultPageSize,
-                limits: Qk.defaultPageSizeOptions,
+                limit: Const.defaultPageSize,
+                limits: Const.defaultPageSizeOptions,
                 parseData: function (res) {
                     return {
                         "code" : 0,
@@ -85,21 +85,21 @@
     }
 
     function Edit(id) {
-        var url = id ? Qk.getRealRoutePath('{{ route_uri('admin.config.friend_link.edit') }}', {friend_link: id}) : '{{ route('admin.config.friend_link.create') }}';
-        Qk.loadPage(url, {}, function (page) {
+        var url = id ? Common.getRealRoutePath('{{ route_uri('admin.config.friend_link.edit') }}', {friend_link: id}) : '{{ route('admin.config.friend_link.create') }}';
+        Common.loadPage(url, {}, function (page) {
             $('#content_box').html(page);
         });
     }
 
     function Save(id, form_datas) {
-        var saveUrl = id > 0 ? Qk.getRealRoutePath('{{ route_uri('admin.config.friend_link.update') }}', {friend_link: id}) : '{{ route('admin.config.friend_link.store') }}';
-        Qk.ajaxRequest(saveUrl, form_datas, (id > 0 ? 'PUT' : 'POST'), function (data) {
+        var saveUrl = id > 0 ? Common.getRealRoutePath('{{ route_uri('admin.config.friend_link.update') }}', {friend_link: id}) : '{{ route('admin.config.friend_link.store') }}';
+        Common.ajaxRequest(saveUrl, form_datas, (id > 0 ? 'PUT' : 'POST'), function (data) {
             if (data.status == 'success') {
-                Qk.msg('保存成功!', {icon: 1}, function () {
+                Common.msg('保存成功!', {icon: 1}, function () {
                     goBack('{{ route('admin.config.friend_link.index') }}');
                 });
             } else {
-                Qk.msg(data.info, {icon: 2});
+                Common.msg(data.info, {icon: 2});
             }
         }, function (errors) {
             alertErrors(errors);
@@ -107,22 +107,22 @@
     }
 
     function Delete(id) {
-        var confirm_dialog = Qk.confirm({
+        var confirm_dialog = Common.confirm({
             title: '删除友情链接',
             content: '您确定要删除当前友情链接信息吗？',
             yes: function () {
-                loading = Qk.msg('正在删除中,请稍后...', {icon: 16, time: 60000});
-                Qk.ajaxRequest(Qk.getRealRoutePath('{{ route_uri('admin.config.friend_link.destroy') }}', {friend_link: id}), null, 'DELETE', function (data) {
+                loading = Common.msg('正在删除中,请稍后...', {icon: 16, time: 60000});
+                Common.ajaxRequest(Common.getRealRoutePath('{{ route_uri('admin.config.friend_link.destroy') }}', {friend_link: id}), null, 'DELETE', function (data) {
                     if (data.status == 'success') {
-                        Qk.close(confirm_dialog);
-                        Qk.msg("删除成功！", {icon: 1}, function () {
+                        Common.close(confirm_dialog);
+                        Common.msg("删除成功！", {icon: 1}, function () {
                             Lists();
                         });
                     } else {
-                        Qk.msg(data.info, {icon: 2});
+                        Common.msg(data.info, {icon: 2});
                     }
                 }, function (errors) {
-                    Qk.msg(errors, {icon: 2});
+                    Common.msg(errors, {icon: 2});
                 });
             }
         })
@@ -130,12 +130,12 @@
 
     layui.use('form', function () {
         layui.form.on('checkbox(isShow)', function (obj) {
-            var url = Qk.getRealRoutePath('{{ route_uri('admin.config.friend_link.is_show') }}', {friend_link: this.value});
-            Qk.ajaxRequest(url, {isShow: obj.elem.checked}, 'PUT', function (data) {
+            var url = Common.getRealRoutePath('{{ route_uri('admin.config.friend_link.is_show') }}', {friend_link: this.value});
+            Common.ajaxRequest(url, {isShow: obj.elem.checked}, 'PUT', function (data) {
                 if (data.status == 'success') {
-                    Qk.msg('设置成功!', {icon: 1});
+                    Common.msg('设置成功!', {icon: 1});
                 } else {
-                    Qk.msg('设置失败', {icon: 2});
+                    Common.msg('设置失败', {icon: 2});
                 }
             }, function (errors) {
                 alertErrors(errors);

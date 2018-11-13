@@ -96,7 +96,7 @@
     $(document).ready(function () {
         $('#advert_upload').click(function () {
             if ($('.upload_tips').find('font').html() == '') {
-                return Qk.msg('请选择广告位置.', {icon: 2});
+                return Common.msg('请选择广告位置.', {icon: 2});
             }
         });
     })

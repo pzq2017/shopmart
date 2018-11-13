@@ -5,7 +5,7 @@ var layer = layui.use('layer', function () {
 var Common = {
     open: function (options) {
         var opts = {};
-        opts = $.extend(opts, {offset: '100px'}, optioins);
+        opts = $.extend(opts, {offset: '100px'}, options);
         return layer.open(opts);
     },
     confirm: function (options) {
@@ -35,7 +35,7 @@ var Common = {
         return layer.close(index);
     },
     ajaxRequest: function (url, params, type, successCallback, failCallback, dataType="json") {
-        if (loading < 1) loading = Qk.msg('加载中...', {icon: 16, time: 60000});
+        if (loading < 1) loading = Common.msg('加载中...', {icon: 16, time: 60000});
         $.ajax({
             type: type,
             url: url,
@@ -129,31 +129,41 @@ var Common = {
         }
         routeUrl += append.join('&');
         return routeUrl;
-    }
+    },
+    tableRender: function (options) {
+        var opt = {
+            elem: '#list-datas',
+            where: null,
+            page: true,
+            limit: Const.defaultPageSize,
+            limits: Const.defaultPageSizeOptions,
+            parseData: function (res) {
+                return {
+                    "code" : 0,
+                    "data" : res.message.lists,
+                    "count": res.message.total,
+                }
+            },
+            text: {
+                none: '暂无数据...'
+            },
+        };
+        layui.use('table', function () {
+            layui.table.render($.extend(opt, options));
+            layui.table.on('tool(list-datas)', function (obj) {
+                var event = obj.event, data = obj.data;
+                if (event == 'edit') {
+                    Edit(data.id);
+                } else if (event == 'del') {
+                    Delete(data.id);
+                }
+            })
+        });
+    },
 };
 
-Qk.templateData = function (template, data) {
-    var pattern = /{(.*?)}/g
-    while(result = pattern.exec(template)) {
-        if (result[1]) {
-            if (typeof data[result[1]] !== 'undefined' && data[result[1]] != null) {
-                template = template.replace(result[0], data[result[1]]);
-            } else {
-                template = template.replace(result[0], '');
-            }
-        }
-    }
-    return template;
+var Const = {
+    defaultPageSize: 25,
+    defaultPageSizeOptions: [25, 50, 100],
+    maxUploadSize: 20 * 1024,
 }
-
-Qk.pageHeight = function () {
-    return document.documentElement.clientHeight || document.body.clientHeight;
-}
-
-Qk.pageWidth = function () {
-    return document.documentElement.clientWidth || document.body.clientWidth;
-}
-
-Qk.defaultPageSize = 25;
-Qk.defaultPageSizeOptions = [25, 50, 100];
-Qk.maxUploadSize = 20 * 1024;

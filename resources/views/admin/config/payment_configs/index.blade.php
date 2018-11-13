@@ -64,21 +64,21 @@
     }
 
     function Edit(id) {
-        var url = Qk.getRealRoutePath('{{ route_uri('admin.config.payment_config.edit') }}', {payment_config: id});
-        Qk.loadPage(url, {}, function (page) {
+        var url = Common.getRealRoutePath('{{ route_uri('admin.config.payment_config.edit') }}', {payment_config: id});
+        Common.loadPage(url, {}, function (page) {
             $('#content_box').html(page);
         });
     }
 
     function Save(id, form_datas) {
-        var saveUrl = Qk.getRealRoutePath('{{ route_uri('admin.config.payment_config.update') }}', {payment_config: id});
-        Qk.ajaxRequest(saveUrl, form_datas, 'PUT', function (data) {
+        var saveUrl = Common.getRealRoutePath('{{ route_uri('admin.config.payment_config.update') }}', {payment_config: id});
+        Common.ajaxRequest(saveUrl, form_datas, 'PUT', function (data) {
             if (data.status == 'success') {
-                Qk.msg('保存成功!', {icon: 1}, function () {
+                Common.msg('保存成功!', {icon: 1}, function () {
                     goBack('{{ route('admin.config.payment_config.index') }}');
                 });
             } else {
-                Qk.msg(data.info, {icon: 2});
+                Common.msg(data.info, {icon: 2});
             }
         }, function (errors) {
             alertErrors(errors);
@@ -87,12 +87,12 @@
 
     layui.use('form', function () {
         layui.form.on('checkbox(enabled)', function (obj) {
-            var url = Qk.getRealRoutePath('{{ route_uri('admin.config.payment_config.enabled') }}', {payment_config: this.value});
-            Qk.ajaxRequest(url, {enabled: obj.elem.checked}, 'PUT', function (data) {
+            var url = Common.getRealRoutePath('{{ route_uri('admin.config.payment_config.enabled') }}', {payment_config: this.value});
+            Common.ajaxRequest(url, {enabled: obj.elem.checked}, 'PUT', function (data) {
                 if (data.status == 'success') {
-                    Qk.msg('设置成功!', {icon: 1});
+                    Common.msg('设置成功!', {icon: 1});
                 } else {
-                    Qk.msg('设置失败', {icon: 2});
+                    Common.msg('设置失败', {icon: 2});
                 }
             }, function (errors) {
                 alertErrors(errors);
@@ -100,12 +100,12 @@
         });
 
         layui.form.on('switch(switchDebug)', function (obj) {
-            var url = Qk.getRealRoutePath('{{ route_uri('admin.config.payment_config.debug') }}', {payment_config: this.value});
-            Qk.ajaxRequest(url, {debug: obj.elem.checked}, 'PUT', function (data) {
+            var url = Common.getRealRoutePath('{{ route_uri('admin.config.payment_config.debug') }}', {payment_config: this.value});
+            Common.ajaxRequest(url, {debug: obj.elem.checked}, 'PUT', function (data) {
                 if (data.status == 'success') {
-                    Qk.msg('设置成功!', {icon: 1});
+                    Common.msg('设置成功!', {icon: 1});
                 } else {
-                    Qk.msg('设置失败', {icon: 2});
+                    Common.msg('设置失败', {icon: 2});
                 }
             }, function (errors) {
                 alertErrors(errors);

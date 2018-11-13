@@ -44,8 +44,8 @@
                 url: '{{ route('admin.config.ad_position.lists') }}',
                 where: params,
                 page: true,
-                limit: Qk.defaultPageSize,
-                limits: Qk.defaultPageSizeOptions,
+                limit: Const.defaultPageSize,
+                limits: Const.defaultPageSizeOptions,
                 parseData: function (res) {
                     return {
                         "code" : 0,
@@ -79,21 +79,21 @@
     }
 
     function Edit(id) {
-        var url = id ? Qk.getRealRoutePath('{{ route_uri('admin.config.ad_position.edit') }}', {ad_position: id}) : '{{ route('admin.config.ad_position.create') }}';
-        Qk.loadPage(url, {}, function (page) {
+        var url = id ? Common.getRealRoutePath('{{ route_uri('admin.config.ad_position.edit') }}', {ad_position: id}) : '{{ route('admin.config.ad_position.create') }}';
+        Common.loadPage(url, {}, function (page) {
             $('#content_box').html(page);
         });
     }
 
     function Save(id, form_datas) {
-        var saveUrl = id > 0 ? Qk.getRealRoutePath('{{ route_uri('admin.config.ad_position.update') }}', {ad_position: id}) : '{{ route('admin.config.ad_position.store') }}';
-        Qk.ajaxRequest(saveUrl, form_datas, (id > 0 ? 'PUT' : 'POST'), function (data) {
+        var saveUrl = id > 0 ? Common.getRealRoutePath('{{ route_uri('admin.config.ad_position.update') }}', {ad_position: id}) : '{{ route('admin.config.ad_position.store') }}';
+        Common.ajaxRequest(saveUrl, form_datas, (id > 0 ? 'PUT' : 'POST'), function (data) {
             if (data.status == 'success') {
-                Qk.msg('保存成功!', {icon: 1}, function () {
+                Common.msg('保存成功!', {icon: 1}, function () {
                     goBack('{{ route('admin.config.ad_position.index') }}');
                 });
             } else {
-                Qk.msg(data.info, {icon: 2});
+                Common.msg(data.info, {icon: 2});
             }
         }, function (errors) {
             alertErrors(errors);
@@ -101,22 +101,22 @@
     }
 
     function Delete(id) {
-        var confirm_dialog = Qk.confirm({
+        var confirm_dialog = Common.confirm({
             title: '删除广告位置',
             content: '您确定要删除当前广告位置信息吗？',
             yes: function () {
-                loading = Qk.msg('正在删除中,请稍后...', {icon: 16, time: 60000});
-                Qk.ajaxRequest(Qk.getRealRoutePath('{{ route_uri('admin.config.ad_position.destroy') }}', {ad_position: id}), null, 'DELETE', function (data) {
+                loading = Common.msg('正在删除中,请稍后...', {icon: 16, time: 60000});
+                Common.ajaxRequest(Common.getRealRoutePath('{{ route_uri('admin.config.ad_position.destroy') }}', {ad_position: id}), null, 'DELETE', function (data) {
                     if (data.status == 'success') {
-                        Qk.close(confirm_dialog);
-                        Qk.msg("删除成功！", {icon: 1}, function () {
+                        Common.close(confirm_dialog);
+                        Common.msg("删除成功！", {icon: 1}, function () {
                             Lists();
                         });
                     } else {
-                        Qk.msg(data.info, {icon: 2});
+                        Common.msg(data.info, {icon: 2});
                     }
                 }, function (errors) {
-                    Qk.msg(errors, {icon: 2});
+                    Common.msg(errors, {icon: 2});
                 });
             }
         })

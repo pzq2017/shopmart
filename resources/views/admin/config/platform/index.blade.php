@@ -311,13 +311,13 @@
 </div>
 <script type="text/javascript">
     function Save(form_datas) {
-        Qk.ajaxRequest('{{ route('admin.config.platform.save') }}', form_datas, 'POST', function (data) {
+        Common.ajaxRequest('{{ route('admin.config.platform.save') }}', form_datas, 'POST', function (data) {
             if (data.status == 'success') {
-                Qk.msg('保存成功!', {icon: 1}, function () {
+                Common.msg('保存成功!', {icon: 1}, function () {
                     goBack('{{ route('admin.config.platform.index') }}');
                 });
             } else {
-                Qk.msg(data.info, {icon: 2});
+                Common.msg(data.info, {icon: 2});
             }
         }, function (errors) {
             alertErrors(errors);

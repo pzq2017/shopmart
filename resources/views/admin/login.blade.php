@@ -49,7 +49,7 @@
 <script type="application/javascript" src="/js/common.js"></script>
 <script type="application/javascript" src="/js/admin/login.js"></script>
 <script>
-    window.params = {csrf_token: '{{ csrf_token() }}', checkLoginUrl: '{{ route('admin.checkLogin') }}'};
+    var baseParams = {csrf_token: '{{ csrf_token() }}', checkLoginUrl: '{{ route('admin.checkLogin') }}'};
     document.onkeydown = function (event) {
         var e = event || window.event;
         if (e && e.keyCode == 13) {
