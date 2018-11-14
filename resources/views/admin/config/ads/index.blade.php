@@ -46,84 +46,66 @@
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
 </script>
 <script type="text/javascript">
-    var params = {'_token': baseParams.csrf_token};
+    var params = {};
+    var route_url = {
+        index: '{{ route('admin.config.ad.index') }}',
+        lists: '{{ route('admin.config.ad.lists') }}',
+        create: '{{ route('admin.config.ad.create') }}',
+        save: '{{ route('admin.config.ad.store') }}',
+        edit: '{{ route_uri('admin.config.ad.edit') }}',
+        update: '{{ route_uri('admin.config.ad.update') }}',
+        delete: '{{ route_uri('admin.config.ad.destroy') }}',
+        publish: '{{ route_uri('admin.config.ad.update_publish_date') }}',
+    };
     function Lists() {
-        layui.use('table', function () {
-            var table = layui.table;
-            table.render({
-                elem: '#list-datas',
-                url: '{{ route('admin.config.ad.lists') }}',
-                where: params,
-                page: true,
-                limit: Const.defaultPageSize,
-                limits: Const.defaultPageSizeOptions,
-                parseData: function (res) {
-                    return {
-                        "code" : 0,
-                        "data" : res.message.lists,
-                        "count": res.message.total,
+        Common.dataTableRender({
+            url: route_url.lists,
+            param: params,
+            cols: [[
+                {field: 'id', title: 'ID', sort: true, width: 60, align: 'center'},
+                {field: 'name', title: '广告名称', align: 'center'},
+                {field: 'posid', title: '广告位置', align: 'center', templet: function (data) {
+                    if (data.ad_positions) {
+                        return data.ad_positions.name;
                     }
-                },
-                cols: [[
-                    {field: 'id', title: 'ID', sort: true, width: 60, align: 'center'},
-                    {field: 'name', title: '广告名称', align: 'center'},
-                    {field: 'posid', title: '广告位置', align: 'center', templet: function (data) {
-                        if (data.ad_positions) {
-                            return data.ad_positions.name;
-                        }
-                        return '';
-                    }},
-                    {field: 'url', title: '广告链接', align: 'center'},
-                    {field: 'date', title: '广告日期', align: 'center', templet: function (data) {
-                        return data.start_date + '~' + data.end_date;
-                    }},
-                    {field: 'image_path', title: '广告图', align: 'center', templet: function (data) {
-                        return '<a href="/file/'+data.image_path+'" target="_blank"><img src="/file/'+data.image_path+'"></a>';
-                    }},
-                    {field: 'click_num', title: '点击数', width: 80, align: 'center'},
-                    {field: 'sort', title: '排序号', width: 80, align: 'center'},
-                    {field: 'status', title: '发布状态', width: 120, align: 'center', unresize: true, templet: function (data) {
-                        var html = '<input type="checkbox" name="ad_publish" value="'+data.id+'" title="发布" lay-filter="ad_publish" '+(data.publish_date ? 'checked' : '')+'>';
-                        return html;
-                    }},
-                    {field: 'created_at', title: '创建日期',sort: true, width: 180, align: 'center'},
-                    {title: '操作', toolbar: '#actionBar', width: 150, align: 'center'},
-                ]],
-                text: {
-                    none: '暂无数据...'
-                },
-            });
-
-            table.on('tool(list-datas)', function (obj) {
-                var event = obj.event, data = obj.data;
-                if (event == 'edit') {
-                    Edit(data.id);
-                } else if (event == 'delete') {
-                    Delete(data.id);
-                }
-            })
-        })
+                    return '';
+                }},
+                {field: 'url', title: '广告链接', align: 'center'},
+                {field: 'date', title: '广告日期', align: 'center', templet: function (data) {
+                    return data.start_date + '~' + data.end_date;
+                }},
+                {field: 'image_path', title: '广告图', align: 'center', templet: function (data) {
+                    return '<a href="/file/'+data.image_path+'" target="_blank"><img src="/file/'+data.image_path+'"></a>';
+                }},
+                {field: 'click_num', title: '点击数', width: 80, align: 'center'},
+                {field: 'sort', title: '排序号', width: 80, align: 'center'},
+                {field: 'status', title: '发布状态', width: 120, align: 'center', unresize: true, templet: function (data) {
+                    var html = '<input type="checkbox" name="ad_publish" value="'+data.id+'" title="发布" lay-filter="ad_publish" '+(data.publish_date ? 'checked' : '')+'>';
+                    return html;
+                }},
+                {field: 'created_at', title: '创建日期',sort: true, width: 180, align: 'center'},
+                {title: '操作', toolbar: '#actionBar', width: 150, align: 'center'},
+            ]],
+        });
     }
 
     function Edit(id) {
-        var url = id ? Common.getRealRoutePath('{{ route_uri('admin.config.ad.edit') }}', {ad: id}) : '{{ route('admin.config.ad.create') }}';
+        var url = id ? Common.getRealRoutePath(route_url.edit, {ad: id}) : route_url.create;
         Common.loadPage(url, {}, function (page) {
             $('#content_box').html(page);
         });
     }
 
     function Save(id, form_datas) {
-        var saveUrl = id > 0 ? Common.getRealRoutePath('{{ route_uri('admin.config.ad.update') }}', {ad: id}) : '{{ route('admin.config.ad.store') }}';
+        var saveUrl = id > 0 ? Common.getRealRoutePath(route_url.update, {ad: id}) : route_url.save;
         Common.ajaxRequest(saveUrl, form_datas, (id > 0 ? 'PUT' : 'POST'), function (data) {
             if (data.status == 'success') {
                 Common.msg('保存成功!', {icon: 1}, function () {
-                    goBack('{{ route('admin.config.ad.index') }}');
+                    goBack(route_url.index);
                 });
             } else {
-                Common.msg(data.info, {icon: 2});
+                Common.alertErrors(data.info);
             }
-        }, function (errors) {
-            alertErrors(errors);
         });
     }
 
@@ -133,17 +115,15 @@
             content: '您确定要删除当前广告信息吗？',
             yes: function () {
                 loading = Common.msg('正在删除中,请稍后...', {icon: 16, time: 60000});
-                Common.ajaxRequest(Common.getRealRoutePath('{{ route_uri('admin.config.ad.destroy') }}', {ad: id}), null, 'DELETE', function (data) {
+                Common.ajaxRequest(Common.getRealRoutePath(route_url.delete, {ad: id}), null, 'DELETE', function (data) {
                     if (data.status == 'success') {
                         Common.close(confirm_dialog);
                         Common.msg("删除成功！", {icon: 1}, function () {
                             Lists();
                         });
                     } else {
-                        Common.msg(data.info, {icon: 2});
+                        Common.alertErrors(data.info);
                     }
-                }, function (errors) {
-                    alertErrors(errors);
                 });
             }
         })
@@ -153,22 +133,19 @@
         layui.form.render();
 
         layui.form.on('checkbox(ad_publish)', function (obj) {
-            var url = Common.getRealRoutePath('{{ route_uri('admin.config.ad.update_publish_date') }}', {ad: this.value});
+            var url = Common.getRealRoutePath(route_url.publish, {ad: this.value});
             Common.ajaxRequest(url, {publish: obj.elem.checked}, 'PUT', function (data) {
                 if (data.status == 'success') {
                     Common.msg('设置成功!', {icon: 1});
                 } else {
-                    Common.msg('设置失败', {icon: 2});
+                    Common.alertErrors('设置失败');
                 }
-            }, function (errors) {
-                alertErrors(errors);
             });
         });
     })
 
     function Search() {
-        if (params.name) params.name = '';
-        if (params.posid) params.posid = '';
+        params = {};
         var form = document.forms['adsSearch'];
         if (form.name.value)
             params.name = form.name.value;

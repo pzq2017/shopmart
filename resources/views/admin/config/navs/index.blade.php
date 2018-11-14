@@ -45,74 +45,56 @@
     <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>
 </script>
 <script type="text/javascript">
-    var params = {'_token': baseParams.csrf_token};
+    var params = {};
+    var route_url = {
+        index: '{{ route('admin.config.nav.index') }}',
+        lists: '{{ route('admin.config.nav.lists') }}',
+        create: '{{ route('admin.config.nav.create') }}',
+        save: '{{ route('admin.config.nav.store') }}',
+        edit: '{{ route_uri('admin.config.nav.edit') }}',
+        update: '{{ route_uri('admin.config.nav.update') }}',
+    };
     function Lists() {
-        layui.use('table', function () {
-            var table = layui.table;
-            table.render({
-                elem: '#list-datas',
-                url: '{{ route('admin.config.nav.lists') }}',
-                where: params,
-                page: true,
-                limit: Const.defaultPageSize,
-                limits: Const.defaultPageSizeOptions,
-                parseData: function (res) {
-                    return {
-                        "code" : 0,
-                        "data" : res.message.lists,
-                        "count": res.message.total,
+        Common.dataTableRender({
+            url: route_url.lists,
+            param: params,
+            cols: [[
+                {field: 'id', title: 'ID', sort: true, width: 60, align: 'center'},
+                {field: 'type', title: '类型', sort: true, width: 150, align: 'center', templet: function (data) {
+                    return data.typeName;
+                }},
+                {field: 'name', title: '名称', width: 200, align: 'center'},
+                {field: 'url', title: '链接', align: 'center'},
+                {field: 'isShow', title: '是否显示',sort: true, width: 100, align: 'center', templet: function (data) {
+                    if (data.isShow == {{ \App\Models\Navs::NAVS_SHOW }}) {
+                        return '显示';
                     }
-                },
-                cols: [[
-                    {field: 'id', title: 'ID', sort: true, width: 60, align: 'center'},
-                    {field: 'type', title: '类型', sort: true, width: 150, align: 'center', templet: function (data) {
-                        return data.typeName;
-                    }},
-                    {field: 'name', title: '名称', width: 200, align: 'center'},
-                    {field: 'url', title: '链接', align: 'center'},
-                    {field: 'isShow', title: '是否显示',sort: true, width: 100, align: 'center', templet: function (data) {
-                        if (data.isShow == {{ \App\Models\Navs::NAVS_SHOW }}) {
-                            return '显示';
-                        }
-                        return '隐藏';
-                    }},
-                    {field: 'sort', title: '排序号', width: 80, align: 'center'},
-                    {field: 'created_at', title: '创建日期',sort: true, width: 200, align: 'center'},
-                    {title: '操作', toolbar: '#actionBar', width: 100, align: 'center'},
-                ]],
-                text: {
-                    none: '暂无数据...'
-                },
-            });
-
-            table.on('tool(list-datas)', function (obj) {
-                var event = obj.event, data = obj.data;
-                if (event == 'edit') {
-                    Edit(data.id);
-                }
-            })
-        })
+                    return '隐藏';
+                }},
+                {field: 'sort', title: '排序号', width: 80, align: 'center'},
+                {field: 'created_at', title: '创建日期',sort: true, width: 200, align: 'center'},
+                {title: '操作', toolbar: '#actionBar', width: 100, align: 'center'},
+            ]],
+        });
     }
 
     function Edit(id) {
-        var url = id ? Common.getRealRoutePath('{{ route_uri('admin.config.nav.edit') }}', {'nav': id}) : '{{ route('admin.config.nav.create') }}';
+        var url = id ? Common.getRealRoutePath(route_url.edit, {'nav': id}) : route_url.create;
         Common.loadPage(url, {}, function (page) {
             $('#content_box').html(page);
         });
     }
 
     function Save(id, form_datas) {
-        var saveUrl = id > 0 ? Common.getRealRoutePath('{{ route_uri('admin.config.nav.update') }}', {nav: id}) : '{{ route('admin.config.nav.store') }}';
+        var saveUrl = id > 0 ? Common.getRealRoutePath(route_url.update, {nav: id}) : route_url.save;
         Common.ajaxRequest(saveUrl, form_datas, (id > 0 ? 'PUT' : 'POST'), function (data) {
             if (data.status == 'success') {
                 Common.msg('保存成功!', {icon: 1}, function () {
-                    goBack('{{ route('admin.config.nav.index') }}');
+                    goBack(route_url.index);
                 });
             } else {
-                Common.msg(data.info, {icon: 2});
+                Common.alertErrors(data.info);
             }
-        }, function (errors) {
-            alertErrors(errors);
         });
     }
 

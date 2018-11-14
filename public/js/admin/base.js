@@ -65,17 +65,6 @@ function logout() {
     });
 }
 
-function alertErrors(errors) {
-    if (typeof(errors) == 'object') {
-        for (var error in errors) {
-            Common.msg(errors[error][0], {icon: 2});
-            return;
-        }
-    } else {
-        Common.msg(errors, {icon: 2});
-    }
-}
-
 function uploadFile(objId, acceptType, acceptExts, pSize, handleType) {
     if (!pSize) pSize = '';
     if (!handleType) handleType = '';
@@ -102,15 +91,15 @@ function uploadFile(objId, acceptType, acceptExts, pSize, handleType) {
                     $('#' + objId + '_value').val(res.message);
                 } else {
                     if (res.info) {
-                        Common.msg(res.info, {icon: 2});
+                        Common.alertErrors(res.info);
                     } else {
-                        Common.msg('上传失败.', {icon: 2});
+                        Common.alertErrors('上传失败.');
                     }
                 }
             },
             error: function(){
                 Common.close(load);
-                Common.msg('上传失败.', {icon: 2});
+                Common.alertErrors('上传失败.');
             }
         });
     })

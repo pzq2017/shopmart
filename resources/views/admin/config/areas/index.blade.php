@@ -34,82 +34,78 @@
     </div>
 </div>
 <script type="text/javascript">
-    var params = {'_token': baseParams.csrf_token, 'pid': {{ $pid }}};
+    var params = {'pid': {{ $pid }}};
+    var route_url = {
+        index: '{{ route('admin.config.area.index') }}',
+        lists: '{{ route('admin.config.area.lists') }}',
+        create: '{{ route('admin.config.area.create') }}',
+        save: '{{ route('admin.config.area.store') }}',
+        edit: '{{ route_uri('admin.config.area.edit') }}',
+        update: '{{ route_uri('admin.config.area.update') }}',
+        delete: '{{ route_uri('admin.config.area.destroy') }}',
+    };
     function Lists() {
-        layui.use('table', function () {
-            var table = layui.table;
-            table.render({
-                elem: '#list-datas',
-                url: '{{ route('admin.config.area.lists') }}',
-                where: params,
-                page: false,
-                parseData: function (res) {
-                    return {
-                        "code" : 0,
-                        "data" : res.message.lists,
-                        "prev_pid" : res.message.prev_pid,
-                    }
-                },
-                cols: [[
-                    {field: 'id', title: 'ID', type: 'numbers', sort: true, width: 60, align: 'center'},
-                    {field: 'name', title: '地区名称', align: 'center'},
-                    {field: 'first_letter', title: '名称首字母', align: 'center'},
-                    {field: 'isShow', title: '是否显示', width: 120, align: 'center', templet: function (data) {
-                        return data.isShow == 1 ? '显示' : '隐藏';
-                    }},
-                    {field: 'sort', title: '排序号', width: 80, align: 'center'},
-                    {field: 'created_at', title: '创建日期',sort: true, width: 180, align: 'center'},
-                    {title: '操作', width: 200, align: 'center', templet: function (data) {
-                        var html = '';
-                            if (data.type < {{ \App\Models\Area::TYPE_DISTRICT }} ) {
-                                html += '<a class="layui-btn layui-btn-xs" lay-event="view">查看</a>';
-                            }
-                            html += '<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>';
-                            html += '<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>';
-                        return html;
-                    }},
-                ]],
-                text: {
-                    none: '暂无数据...'
-                },
-                done:function (res) {
-                    $('#back_grade').attr('prev', res.prev_pid);
+        Common.dataTableRender({
+            url: route_url.lists,
+            page: false,
+            param: params,
+            parseData: function (res) {
+                return {
+                    "code" : 0,
+                    "data" : res.message.lists,
+                    "prev_pid" : res.message.prev_pid,
                 }
-            });
-
+            },
+            cols: [[
+                {field: 'id', title: 'ID', type: 'numbers', sort: true, width: 60, align: 'center'},
+                {field: 'name', title: '地区名称', align: 'center'},
+                {field: 'first_letter', title: '名称首字母', align: 'center'},
+                {field: 'isShow', title: '是否显示', width: 120, align: 'center', templet: function (data) {
+                    return data.isShow == 1 ? '显示' : '隐藏';
+                }},
+                {field: 'sort', title: '排序号', width: 80, align: 'center'},
+                {field: 'created_at', title: '创建日期',sort: true, width: 180, align: 'center'},
+                {title: '操作', width: 200, align: 'center', templet: function (data) {
+                    var html = '';
+                    if (data.type < {{ \App\Models\Area::TYPE_DISTRICT }} ) {
+                        html += '<a class="layui-btn layui-btn-xs" lay-event="view">查看</a>';
+                    }
+                    html += '<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>';
+                    html += '<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>';
+                    return html;
+                }},
+            ]],
+            done:function (res) {
+                $('#back_grade').attr('prev', res.prev_pid);
+            }
+        }, function (table) {
             table.on('tool(list-datas)', function (obj) {
                 var event = obj.event, data = obj.data;
-                if (event == 'edit') {
-                    Edit(data.id);
-                } else if (event == 'delete') {
-                    Delete(data.id);
-                } else if (event == 'view') {
+                if (event == 'view') {
                     params.pid = data.id;
                     Lists();
                 }
             })
-        })
+        });
     }
 
     function Edit(id) {
-        var url = id ? Common.getRealRoutePath('{{ route_uri('admin.config.area.edit') }}', {area: id}) : Common.getRealRoutePath('{{ route_uri('admin.config.area.create') }}', {pid: params.pid});
+        var url = id ? Common.getRealRoutePath(route_url.edit, {area: id}) : Common.getRealRoutePath(route_url.create, {pid: params.pid});
         Common.loadPage(url, {}, function (page) {
             $('#content_box').html(page);
         });
     }
 
     function Save(id, form_datas) {
-        var saveUrl = id > 0 ? Common.getRealRoutePath('{{ route_uri('admin.config.area.update') }}', {area: id}) : '{{ route('admin.config.area.store') }}';
+        var saveUrl = id > 0 ? Common.getRealRoutePath(route.update, {area: id}) : route_url.save;
         Common.ajaxRequest(saveUrl, form_datas, (id > 0 ? 'PUT' : 'POST'), function (data) {
             if (data.status == 'success') {
                 Common.msg('保存成功!', {icon: 1}, function () {
-                    goBack(Common.getRealRoutePath('{{ route_uri('admin.config.area.index') }}', {pid: params.pid}));
+                    goBack(Common.getRealRoutePath(route_url.index, {pid: params.pid}));
                 });
             } else {
-                Common.msg(data.info, {icon: 2});
+                Common.alertErrors(data.info);
             }
-        }, function (errors) {
-            alertErrors(errors);
         });
     }
 
@@ -119,17 +115,15 @@
             content: '您确定要删除当前地区信息吗？',
             yes: function () {
                 loading = Common.msg('正在删除中,请稍后...', {icon: 16, time: 60000});
-                Common.ajaxRequest(Common.getRealRoutePath('{{ route_uri('admin.config.area.destroy') }}', {area: id}), null, 'DELETE', function (data) {
+                Common.ajaxRequest(Common.getRealRoutePath(route_url.delete, {area: id}), null, 'DELETE', function (data) {
                     if (data.status == 'success') {
                         Common.close(confirm_dialog);
                         Common.msg("删除成功！", {icon: 1}, function () {
                             Lists();
                         });
                     } else {
-                        Common.msg(data.info, {icon: 2});
+                        Common.alertErrors(data.info);
                     }
-                }, function (errors) {
-                    Common.msg(errors, {icon: 2});
                 });
             }
         })

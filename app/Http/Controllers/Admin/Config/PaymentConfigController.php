@@ -23,7 +23,7 @@ class PaymentConfigController extends Controller
     public function lists(Request $request)
     {
         $payment_configs = PaymentConfig::all();
-        return $this->handleSuccess($payment_configs);
+        return $this->handleSuccess(['total' => $payment_configs->count(), 'lists' => $payment_configs]);
     }
 
     public function edit(PaymentConfig $paymentConfig)

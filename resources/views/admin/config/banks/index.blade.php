@@ -35,70 +35,52 @@
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
 </script>
 <script type="text/javascript">
-    var params = {'_token': baseParams.csrf_token};
+    var params = {};
+    var route_url = {
+        index: '{{ route('admin.config.bank.index') }}',
+        lists: '{{ route('admin.config.bank.lists') }}',
+        create: '{{ route('admin.config.bank.create') }}',
+        save: '{{ route('admin.config.bank.store') }}',
+        edit: '{{ route_uri('admin.config.bank.edit') }}',
+        update: '{{ route_uri('admin.config.bank.update') }}',
+        delete: '{{ route_uri('admin.config.bank.destroy') }}',
+        publish: '{{ route_uri('admin.config.bank.update_status') }}',
+    };
     function Lists() {
-        layui.use('table', function () {
-            var table = layui.table;
-            table.render({
-                elem: '#list-datas',
-                url: '{{ route('admin.config.bank.lists') }}',
-                where: params,
-                page: true,
-                limit: Const.defaultPageSize,
-                limits: Const.defaultPageSizeOptions,
-                parseData: function (res) {
-                    return {
-                        "code" : 0,
-                        "data" : res.message.lists,
-                        "count": res.message.total,
-                    }
-                },
-                cols: [[
-                    {field: 'id', title: 'ID', sort: true, width: 60, align: 'center'},
-                    {field: 'name', title: '银行名称', align: 'center'},
-                    {field: 'sort', title: '排序号', width: 80, align: 'center'},
-                    {field: 'status', title: '发布状态', width: 120, align: 'center', unresize: true, templet: function (data) {
-                        var html = '<input type="checkbox" name="bank_publish" value="'+data.id+'" title="发布" lay-filter="bank_publish" '+(data.status ? 'checked' : '')+'>';
-                        return html;
-                    }},
-                    {field: 'created_at', title: '创建日期',sort: true, width: 200, align: 'center'},
-                    {title: '操作', toolbar: '#actionBar', width: 150, align: 'center'},
-                ]],
-                text: {
-                    none: '暂无数据...'
-                },
-            });
-
-            table.on('tool(list-datas)', function (obj) {
-                var event = obj.event, data = obj.data;
-                if (event == 'edit') {
-                    Edit(data.id);
-                } else if (event == 'delete') {
-                    Delete(data.id);
-                }
-            })
-        })
+        Common.dataTableRender({
+            url: route_url.lists,
+            param: params,
+            cols: [[
+                {field: 'id', title: 'ID', sort: true, width: 60, align: 'center'},
+                {field: 'name', title: '银行名称', align: 'center'},
+                {field: 'sort', title: '排序号', width: 80, align: 'center'},
+                {field: 'status', title: '发布状态', width: 120, align: 'center', unresize: true, templet: function (data) {
+                    var html = '<input type="checkbox" name="bank_publish" value="'+data.id+'" title="发布" lay-filter="bank_publish" '+(data.status ? 'checked' : '')+'>';
+                    return html;
+                }},
+                {field: 'created_at', title: '创建日期',sort: true, width: 200, align: 'center'},
+                {title: '操作', toolbar: '#actionBar', width: 150, align: 'center'},
+            ]],
+        });
     }
 
     function Edit(id) {
-        var url = id ? Common.getRealRoutePath('{{ route_uri('admin.config.bank.edit') }}', {bank: id}) : '{{ route('admin.config.bank.create') }}';
+        var url = id ? Common.getRealRoutePath(route_url.edit, {bank: id}) : route_url.create;
         Common.loadPage(url, {}, function (page) {
             $('#content_box').html(page);
         });
     }
 
     function Save(id, form_datas) {
-        var saveUrl = id > 0 ? Common.getRealRoutePath('{{ route_uri('admin.config.bank.update') }}', {bank: id}) : '{{ route('admin.config.bank.store') }}';
+        var saveUrl = id > 0 ? Common.getRealRoutePath(route_url.update, {bank: id}) : route_url.save;
         Common.ajaxRequest(saveUrl, form_datas, (id > 0 ? 'PUT' : 'POST'), function (data) {
             if (data.status == 'success') {
                 Common.msg('保存成功!', {icon: 1}, function () {
-                    goBack('{{ route('admin.config.bank.index') }}');
+                    goBack(route_url.index);
                 });
             } else {
-                Common.msg(data.info, {icon: 2});
+                Common.alertErrors(data.info);
             }
-        }, function (errors) {
-            alertErrors(errors);
         });
     }
 
@@ -108,35 +90,29 @@
             content: '您确定要删除当前银行信息吗？',
             yes: function () {
                 loading = Common.msg('正在删除中,请稍后...', {icon: 16, time: 60000});
-                Common.ajaxRequest(Common.getRealRoutePath('{{ route_uri('admin.config.bank.destroy') }}', {bank: id}), null, 'DELETE', function (data) {
+                Common.ajaxRequest(Common.getRealRoutePath(route_url.delete, {bank: id}), null, 'DELETE', function (data) {
                     if (data.status == 'success') {
                         Common.close(confirm_dialog);
                         Common.msg("删除成功！", {icon: 1}, function () {
                             Lists();
                         });
                     } else {
-                        Common.msg(data.info, {icon: 2});
+                        Common.alertErrors(data.info);
                     }
-                }, function (errors) {
-                    Common.msg(errors, {icon: 2});
                 });
             }
         })
     }
 
     layui.use('form', function () {
-        //layui.form.render();
-
         layui.form.on('checkbox(bank_publish)', function (obj) {
-            var url = Common.getRealRoutePath('{{ route_uri('admin.config.bank.update_status') }}', {bank: this.value});
+            var url = Common.getRealRoutePath(route_url.publish, {bank: this.value});
             Common.ajaxRequest(url, {publish: obj.elem.checked}, 'PUT', function (data) {
                 if (data.status == 'success') {
                     Common.msg('设置成功!', {icon: 1});
                 } else {
-                    Common.msg('设置失败', {icon: 2});
+                    Common.alertErrors('设置失败');
                 }
-            }, function (errors) {
-                alertErrors(errors);
             });
         });
     })

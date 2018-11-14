@@ -26,12 +26,16 @@
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
                 <a href="javascript:;">
-                    <img src="/imgs/default_headpic.png" class="layui-nav-img">
-                    贤心<span class="layui-nav-more"></span></a>
+                    @if(admin_auth()->staffPhoto)
+                        <img src="/file/{{ admin_auth()->staffPhoto }}" class="layui-nav-img">
+                    @else
+                        <img src="/imgs/default_headpic.png" class="layui-nav-img">
+                    @endif
+                    {{ admin_auth()->loginName }}<span class="layui-nav-more"></span></a>
                 <dl class="layui-nav-child">
                     <dd><a href="">基本资料</a></dd><hr>
-                    <dd><a href="">修改密码</a></dd><hr>
-                    <dd><a href="">退出系统</a></dd>
+                    <dd><a href="javascript:editPwd();">修改密码</a></dd><hr>
+                    <dd><a href="javascript:logout();">退出系统</a></dd>
                 </dl>
             </li>
         </ul>

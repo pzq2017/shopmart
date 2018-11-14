@@ -34,8 +34,19 @@ var Common = {
         loading = 0;
         return layer.close(index);
     },
-    ajaxRequest: function (url, params, type, successCallback, failCallback, dataType="json") {
+    alertErrors: function (errors) {
+        if (typeof(errors) == 'object') {
+            for (var error in errors) {
+                Common.msg(errors[error][0], {icon: 2});
+                return;
+            }
+        } else {
+            Common.msg(errors, {icon: 2});
+        }
+    },
+    ajaxRequest: function (url, params, type, successCallback, dataType) {
         if (loading < 1) loading = Common.msg('加载中...', {icon: 16, time: 60000});
+        if (!dataType) dataType = 'json';
         $.ajax({
             type: type,
             url: url,
@@ -69,21 +80,22 @@ var Common = {
                     XMLHttpRequest = JSON.stringify(XMLHttpRequest);
                 }
                 if (XMLHttpRequest.responseJSON) {
-                    if (XMLHttpRequest.responseJSON.errors) {
-                        failCallback(XMLHttpRequest.responseJSON.errors);
-                    } else if(XMLHttpRequest.responseJSON.message) {
-                        failCallback(XMLHttpRequest.responseJSON.message);
-                    } else if(XMLHttpRequest.responseJSON.info) {
-                        failCallback(XMLHttpRequest.responseJSON.info);
+                    var responseJSON = XMLHttpRequest.responseJSON;
+                    if (responseJSON.errors) {
+                        Common.alertErrors(responseJSON.errors);
+                    } else if(responseJSON.message) {
+                        Common.alertErrors(responseJSON.message);
+                    } else if(responseJSON.info) {
+                        Common.alertErrors(responseJSON.info);
                     }
                 } else {
-                    Common.msg('errors:'+textStatus, {icon: 2});
+                    Common.alertErrors('errors:'+textStatus);
                 }
             }
         })
     },
-    loadPage: function (url, params, successCallback, failCallback) {
-        Common.ajaxRequest(url, params, 'GET', successCallback, failCallback, 'html');
+    loadPage: function (url, params, successCallback) {
+        Common.ajaxRequest(url, params, 'GET', successCallback, 'html');
     },
     getParams: function (obj) {
         var params = {}, chk = {}, s;
@@ -130,10 +142,10 @@ var Common = {
         routeUrl += append.join('&');
         return routeUrl;
     },
-    tableRender: function (options) {
+    dataTableRender: function (options, func) {
         var opt = {
             elem: '#list-datas',
-            where: null,
+            where: $.extend({'_token': baseParams.csrf_token}, options.param),
             page: true,
             limit: Const.defaultPageSize,
             limits: Const.defaultPageSizeOptions,
@@ -158,6 +170,7 @@ var Common = {
                     Delete(data.id);
                 }
             })
+            $.isFunction(func) && func(layui.table);
         });
     },
 };

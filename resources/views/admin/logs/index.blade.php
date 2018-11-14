@@ -36,40 +36,27 @@
     </div>
 </div>
 <script type="text/javascript">
-    var params = {'_token': baseParams.csrf_token};
+    var params = {};
+    var route_url = {
+        index: '{{ route('admin.system.log.index') }}',
+        lists: '{{ route('admin.system.log.lists') }}',
+    };
     function Lists() {
-        layui.use('table', function () {
-            var table = layui.table;
-            table.render({
-                elem: '#list-datas',
-                url: '{{ route('admin.system.log.lists') }}',
-                where: params,
-                page: true,
-                limit: Const.defaultPageSize,
-                limits: Const.defaultPageSizeOptions,
-                parseData: function (res) {
-                    return {
-                        "code" : 0,
-                        "data" : res.message.lists,
-                        "count": res.message.total,
+        Common.dataTableRender({
+            url: route_url.lists,
+            param: params,
+            cols: [[
+                {field: 'id', title: 'ID', sort: true, width: 60, align: 'center'},
+                {field: 'staffId', title: '登录员', align: 'center', templet: function (data) {
+                    if (data && data.staff) {
+                        return data.staff.loginName;
                     }
-                },
-                cols: [[
-                    {field: 'id', title: 'ID', sort: true, width: 60, align: 'center'},
-                    {field: 'staffId', title: '登录员', align: 'center', templet: function (data) {
-                        if (data && data.staff) {
-                            return data.staff.loginName;
-                        }
-                        return '';
-                    }},
-                    {field: 'created_at', title: '登录时间', sort: true, align: 'center'},
-                    {field: 'loginIp', title: '登录IP', align: 'center'},
-                ]],
-                text: {
-                    none: '暂无数据...'
-                },
-            });
-        })
+                    return '';
+                }},
+                {field: 'created_at', title: '登录时间', sort: true, align: 'center'},
+                {field: 'loginIp', title: '登录IP', align: 'center'},
+            ]],
+        });
     }
 
     layui.use('laydate', function () {
@@ -82,6 +69,7 @@
     })
 
     function Search() {
+        params = {};
         var form = document.forms['logSearch'];
         if (form.loginName.value)
             params.loginName = form.loginName.value;

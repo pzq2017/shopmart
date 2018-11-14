@@ -8,10 +8,8 @@ function login() {
         } else {
             if (data.info) {
                 $('#verifyImg').click();
-                Common.msg(data.info, {icon: 2});
+                Common.alertErrors(data.info);
             }
         }
-    }, function (errors) {
-        alertErrors(errors);
     });
 }

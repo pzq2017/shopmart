@@ -46,11 +46,20 @@
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
 <script type="text/javascript">
-    var params = {'_token': baseParams.csrf_token};
+    var params = {};
+    var route_url = {
+        index: '{{ route('admin.system.staff.index') }}',
+        lists: '{{ route('admin.system.staff.lists') }}',
+        create: '{{ route('admin.system.staff.create') }}',
+        save: '{{ route('admin.system.staff.store') }}',
+        edit: '{{ route_uri('admin.system.staff.edit') }}',
+        update: '{{ route_uri('admin.system.staff.update') }}',
+        delete: '{{ route_uri('admin.system.staff.destroy') }}',
+    };
     function Lists() {
-        Common.tableRender({
-            url: '{{ route('admin.system.staff.lists') }}',
-            where: params,
+        Common.dataTableRender({
+            url: route_url.lists,
+            param: params,
             cols: [[
                 {field: 'id', title: 'ID', sort: true, width: 60, align: 'center'},
                 {field: 'loginName', title: '账号', align: 'center'},
@@ -76,24 +85,22 @@
     }
 
     function Edit(id) {
-        var url = id ? Common.getRealRoutePath('{{ route_uri('admin.system.staff.edit') }}', {'staff': id}) : '{{ route('admin.system.staff.create') }}';
+        var url = id ? Common.getRealRoutePath(route_url.edit, {staff: id}) : route_url.create;
         Common.loadPage(url, {}, function (page) {
             $('#content_box').html(page);
         });
     }
 
     function Save(id, form_datas) {
-        var saveUrl = id > 0 ? Common.getRealRoutePath('{{ route_uri('admin.system.staff.update') }}', {staff: id}) : '{{ route('admin.system.staff.store') }}';
+        var saveUrl = id > 0 ? Common.getRealRoutePath(route_url.update, {staff: id}) : route_url.save;
         Common.ajaxRequest(saveUrl, form_datas, (id > 0 ? 'PUT' : 'POST'), function (data) {
             if (data.status == 'success') {
                 Common.msg('保存成功!', {icon: 1}, function () {
-                    goBack('{{ route('admin.system.staff.index') }}');
+                    goBack(route_url.index);
                 });
             } else {
-                Common.msg(data.info, {icon: 2});
+                alertErrors(data.info);
             }
-        }, function (errors) {
-            alertErrors(errors);
         });
     }
 
@@ -103,17 +110,15 @@
             content: '您确定要删除当前管理员账号吗？',
             yes: function () {
                 loading = Common.msg('正在删除中,请稍后...', {icon: 16, time: 60000});
-                Common.ajaxRequest(Common.getRealRoutePath('{{ route_uri('admin.system.staff.destroy') }}', {staff: id}), null, 'DELETE', function (data) {
+                Common.ajaxRequest(Common.getRealRoutePath(route_url.delete, {staff: id}), null, 'DELETE', function (data) {
                     if (data.status == 'success') {
                         Common.close(confirm_dialog);
                         Common.msg("删除成功！", {icon: 1}, function () {
                             Lists();
                         });
                     } else {
-                        Common.msg(data.info, {icon: 2});
+                        alertErrors(data.info);
                     }
-                }, function (errors) {
-                    Common.msg(errors, {icon: 2});
                 });
             }
         })
@@ -124,10 +129,7 @@
     })
 
     function Search() {
-        if (params.loginName)
-            params.loginName = '';
-        if (params.staffRoleId)
-            params.staffRoleId = '';
+        params = {};
         var form = document.forms['staffSearch'];
         if (form.loginName.value)
             params.loginName = form.loginName.value;

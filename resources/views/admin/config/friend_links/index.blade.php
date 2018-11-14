@@ -34,75 +34,58 @@
     <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
 </script>
+<script type="text/html" id="isShow">
+    <input type="checkbox" name="isShow" value="@{{ d.id }}" title="显示" lay-filter="isShow" @{{ d.isShow ? 'checked' : '' }}>
+</script>
 <script type="text/javascript">
-    var params = {'_token': baseParams.csrf_token};
+    var params = {};
+    var route_url = {
+        index: '{{ route('admin.config.friend_link.index') }}',
+        lists: '{{ route('admin.config.friend_link.lists') }}',
+        create: '{{ route('admin.config.friend_link.create') }}',
+        save: '{{ route('admin.config.friend_link.store') }}',
+        edit: '{{ route_uri('admin.config.friend_link.edit') }}',
+        update: '{{ route_uri('admin.config.friend_link.update') }}',
+        delete: '{{ route_uri('admin.config.friend_link.destroy') }}',
+        show: '{{ route_uri('admin.config.friend_link.is_show') }}',
+    };
     function Lists() {
-        layui.use('table', function () {
-            var table = layui.table;
-            table.render({
-                elem: '#list-datas',
-                url: '{{ route('admin.config.friend_link.lists') }}',
-                where: params,
-                page: true,
-                limit: Const.defaultPageSize,
-                limits: Const.defaultPageSizeOptions,
-                parseData: function (res) {
-                    return {
-                        "code" : 0,
-                        "data" : res.message.lists,
-                        "count": res.message.total,
-                    }
-                },
-                cols: [[
-                    {field: 'id', title: 'ID', sort: true, width: 60, align: 'center'},
-                    {field: 'name', title: '友情链接名称', align: 'center', templet: function (data) {
-                        return '<a href="'+data.link+'" target="_blank">'+data.name+'</a>';
-                    }},
-                    {field: 'ico', title: '图标', align: 'center', templet: function (data) {
-                        return '<img src="/file/'+data.ico+'">';
-                    }},
-                    {field: 'sort', title: '排序号', width: 80, align: 'center'},
-                    {field: 'status', title: '是否显示', width: 120, align: 'center', unresize: true, templet: function (data) {
-                        return '<input type="checkbox" name="isShow" value="'+data.id+'" title="显示" lay-filter="isShow" '+(data.isShow ? 'checked' : '')+'>';
-                    }},
-                    {field: 'created_at', title: '创建日期',sort: true, width: 180, align: 'center'},
-                    {title: '操作', toolbar: '#actionBar', width: 150, align: 'center'},
-                ]],
-                text: {
-                    none: '暂无数据...'
-                },
-            });
-
-            table.on('tool(list-datas)', function (obj) {
-                var event = obj.event, data = obj.data;
-                if (event == 'edit') {
-                    Edit(data.id);
-                } else if (event == 'delete') {
-                    Delete(data.id);
-                }
-            })
-        })
+        Common.dataTableRender({
+            url: route_url.lists,
+            param: params,
+            cols: [[
+                {field: 'id', title: 'ID', sort: true, width: 60, align: 'center'},
+                {field: 'name', title: '友情链接名称', align: 'center', templet: function (data) {
+                    return '<a href="'+data.link+'" target="_blank">'+data.name+'</a>';
+                }},
+                {field: 'ico', title: '图标', align: 'center', templet: function (data) {
+                    return '<img src="/file/'+data.ico+'">';
+                }},
+                {field: 'sort', title: '排序号', width: 80, align: 'center'},
+                {field: 'status', title: '是否显示', width: 120, align: 'center', unresize: true, templet: '#isShow'},
+                {field: 'created_at', title: '创建日期',sort: true, width: 180, align: 'center'},
+                {title: '操作', toolbar: '#actionBar', width: 150, align: 'center'},
+            ]],
+        });
     }
 
     function Edit(id) {
-        var url = id ? Common.getRealRoutePath('{{ route_uri('admin.config.friend_link.edit') }}', {friend_link: id}) : '{{ route('admin.config.friend_link.create') }}';
+        var url = id ? Common.getRealRoutePath(route_url.edit, {friend_link: id}) : route_url.create;
         Common.loadPage(url, {}, function (page) {
             $('#content_box').html(page);
         });
     }
 
     function Save(id, form_datas) {
-        var saveUrl = id > 0 ? Common.getRealRoutePath('{{ route_uri('admin.config.friend_link.update') }}', {friend_link: id}) : '{{ route('admin.config.friend_link.store') }}';
+        var saveUrl = id > 0 ? Common.getRealRoutePath(route_url.update, {friend_link: id}) : route_url.save;
         Common.ajaxRequest(saveUrl, form_datas, (id > 0 ? 'PUT' : 'POST'), function (data) {
             if (data.status == 'success') {
                 Common.msg('保存成功!', {icon: 1}, function () {
-                    goBack('{{ route('admin.config.friend_link.index') }}');
+                    goBack(route_url.index);
                 });
             } else {
-                Common.msg(data.info, {icon: 2});
+                Common.alertErrors(data.info);
             }
-        }, function (errors) {
-            alertErrors(errors);
         });
     }
 
@@ -112,17 +95,15 @@
             content: '您确定要删除当前友情链接信息吗？',
             yes: function () {
                 loading = Common.msg('正在删除中,请稍后...', {icon: 16, time: 60000});
-                Common.ajaxRequest(Common.getRealRoutePath('{{ route_uri('admin.config.friend_link.destroy') }}', {friend_link: id}), null, 'DELETE', function (data) {
+                Common.ajaxRequest(Common.getRealRoutePath(route_url.delete, {friend_link: id}), null, 'DELETE', function (data) {
                     if (data.status == 'success') {
                         Common.close(confirm_dialog);
                         Common.msg("删除成功！", {icon: 1}, function () {
                             Lists();
                         });
                     } else {
-                        Common.msg(data.info, {icon: 2});
+                        Common.alertErrors(data.info);
                     }
-                }, function (errors) {
-                    Common.msg(errors, {icon: 2});
                 });
             }
         })
@@ -130,15 +111,13 @@
 
     layui.use('form', function () {
         layui.form.on('checkbox(isShow)', function (obj) {
-            var url = Common.getRealRoutePath('{{ route_uri('admin.config.friend_link.is_show') }}', {friend_link: this.value});
+            var url = Common.getRealRoutePath(route_url.show, {friend_link: this.value});
             Common.ajaxRequest(url, {isShow: obj.elem.checked}, 'PUT', function (data) {
                 if (data.status == 'success') {
                     Common.msg('设置成功!', {icon: 1});
                 } else {
-                    Common.msg('设置失败', {icon: 2});
+                    Common.alertErrors('设置失败');
                 }
-            }, function (errors) {
-                alertErrors(errors);
             });
         });
     })

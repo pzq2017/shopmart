@@ -317,10 +317,8 @@
                     goBack('{{ route('admin.config.platform.index') }}');
                 });
             } else {
-                Common.msg(data.info, {icon: 2});
+                Common.alertErrors(data.info);
             }
-        }, function (errors) {
-            alertErrors(errors);
         });
     }
 
