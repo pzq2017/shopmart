@@ -2,11 +2,16 @@
 
 namespace App\Exceptions;
 
+use App\Traits\ResponseJsonTrait;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
 {
+    use ResponseJsonTrait;
+
     /**
      * A list of the exception types that are not reported.
      *
@@ -46,6 +51,12 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        return parent::render($request, $exception);
+        if ($exception instanceof ModelNotFoundException && $request->isXmlHttpRequest()) {
+            return $this->handleFail('无效的访问参数', 404);
+        } elseif ($exception instanceof QueryException && $request->isXmlHttpRequest()) {
+            return $this->handleFail('数据异常', 403);
+        } else {
+            return parent::render($request, $exception);
+        }
     }
 }

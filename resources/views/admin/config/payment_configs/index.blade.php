@@ -74,7 +74,7 @@
     layui.use('form', function () {
         layui.form.on('checkbox(enabled)', function (obj) {
             var url = Common.getRealRoutePath(route_url.enable, {payment_config: this.value});
-            Common.ajaxRequest(url, {enabled: obj.elem.checked}, 'PUT', function (data) {
+            Common.ajaxRequest(url, {enabled: obj.elem.checked ? 1 : 0}, 'PUT', function (data) {
                 if (data.status == 'success') {
                     Common.msg('设置成功!', {icon: 1});
                 } else {
@@ -85,7 +85,7 @@
 
         layui.form.on('switch(switchDebug)', function (obj) {
             var url = Common.getRealRoutePath(route_url.debug, {payment_config: this.value});
-            Common.ajaxRequest(url, {debug: obj.elem.checked}, 'PUT', function (data) {
+            Common.ajaxRequest(url, {debug: obj.elem.checked ? 1 : 0}, 'PUT', function (data) {
                 if (data.status == 'success') {
                     Common.msg('设置成功!', {icon: 1});
                 } else {

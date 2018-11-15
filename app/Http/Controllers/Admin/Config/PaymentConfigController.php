@@ -127,14 +127,14 @@ class PaymentConfigController extends Controller
 
     public function enabled(Request $request, PaymentConfig $paymentConfig)
     {
-        $paymentConfig->enabled = $request->enabled ? 1 : 0;
+        $paymentConfig->enabled = intval($request->enabled) > 0 ? 1 : 0;
         $paymentConfig->save();
         return $this->handleSuccess();
     }
 
     public function debug(Request $request, PaymentConfig $paymentConfig)
     {
-        $paymentConfig->debug = $request->debug ? 1 : 0;
+        $paymentConfig->debug = intval($request->debug) > 0 ? 1 : 0;
         $paymentConfig->save();
         return $this->handleSuccess();
     }

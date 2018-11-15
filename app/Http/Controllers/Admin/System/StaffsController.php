@@ -33,8 +33,9 @@ class StaffsController extends Controller
             ->when($request->staffRoleId, function ($query) use ($request) {
                 return $query->where('staffRoleId', $request->staffRoleId);
             });
+        $count = $query->count();
         $staffs = $this->pagination($query, $request);
-        return $this->handleSuccess(['total' => $query->count(), 'lists' => $staffs]);
+        return $this->handleSuccess(['total' => $count(), 'lists' => $staffs]);
     }
 
     public function create()
@@ -46,7 +47,7 @@ class StaffsController extends Controller
     public function store(StaffRequest $request, StorageService $storageService)
     {
         $staffPhoto = $request->staffPhoto;
-        if ($staffPhoto && !$this->contains_str($staffPhoto)) {
+        if ($staffPhoto && !starts_with($staffPhoto, 'staff/')) {
             $staffPhoto = $storageService->move('temp/'.$staffPhoto, ['target_dir' => 'staff']);
         }
         Staffs::create([
@@ -78,7 +79,7 @@ class StaffsController extends Controller
         }
 
         $staffPhoto = $request->staffPhoto;
-        if ($staffPhoto && !$this->contains_str($staffPhoto)) {
+        if ($staffPhoto && !starts_with($staffPhoto, '/staff')) {
             $staff->staffPhoto = $storageService->move('temp/'.$staffPhoto, ['target_dir' => 'staff']);
         }
 
@@ -98,10 +99,5 @@ class StaffsController extends Controller
         }
         $staff->delete();
         return $this->handleSuccess();
-    }
-
-    private function contains_str($string)
-    {
-        return (substr($string, 0, 6) == 'staff/') ? true : false;
     }
 }

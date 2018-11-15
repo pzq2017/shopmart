@@ -44,6 +44,9 @@
 <script type="text/html" id="actionBar">
     <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>
 </script>
+<script type="text/html" id="isShow">
+    <input type="checkbox" name="isShow" value="@{{ d.id }}" lay-skin="switch" lay-filter="switchShow" lay-text="显示|隐藏" @{{ d.isShow ? 'checked' : '' }}>
+</script>
 <script type="text/javascript">
     var params = {};
     var route_url = {
@@ -53,6 +56,7 @@
         save: '{{ route('admin.config.nav.store') }}',
         edit: '{{ route_uri('admin.config.nav.edit') }}',
         update: '{{ route_uri('admin.config.nav.update') }}',
+        set_show: '{{ route_uri('admin.config.nav.set_show') }}'
     };
     function Lists() {
         Common.dataTableRender({
@@ -65,12 +69,7 @@
                 }},
                 {field: 'name', title: '名称', width: 200, align: 'center'},
                 {field: 'url', title: '链接', align: 'center'},
-                {field: 'isShow', title: '是否显示',sort: true, width: 100, align: 'center', templet: function (data) {
-                    if (data.isShow == {{ \App\Models\Navs::NAVS_SHOW }}) {
-                        return '显示';
-                    }
-                    return '隐藏';
-                }},
+                {field: 'isShow', title: '是否显示',sort: true, width: 150, align: 'center', unresize: true, templet: '#isShow'},
                 {field: 'sort', title: '排序号', width: 80, align: 'center'},
                 {field: 'created_at', title: '创建日期',sort: true, width: 200, align: 'center'},
                 {title: '操作', toolbar: '#actionBar', width: 100, align: 'center'},
@@ -100,6 +99,17 @@
 
     layui.use('form', function () {
         layui.form.render();
+
+        layui.form.on('switch(switchShow)', function (obj) {
+            var url = Common.getRealRoutePath(route_url.set_show, {nav: this.value});
+            Common.ajaxRequest(url, {show: obj.elem.checked ? 1 : 0}, 'PUT', function (data) {
+                if (data.status == 'success') {
+                    Common.msg('设置成功!', {icon: 1});
+                } else {
+                    Common.alertErrors('设置失败', {icon: 2});
+                }
+            });
+        });
     })
 
     function Search() {

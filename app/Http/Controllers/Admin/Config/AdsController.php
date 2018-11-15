@@ -29,8 +29,9 @@ class AdsController extends Controller
                 ->when($request->name, function ($query) use ($request) {
                     return $query->where('name', 'like', '%'.$request->name.'%');
                 });
+        $count = $query->count();
         $ads = $this->pagination($query, $request);
-        return $this->handleSuccess(['total' => $query->count(), 'lists' => $ads]);
+        return $this->handleSuccess(['total' => $count(), 'lists' => $ads]);
     }
 
     public function create(Request $request)
@@ -93,9 +94,9 @@ class AdsController extends Controller
         return $this->handleSuccess();
     }
 
-    public function update_publish_date(Request $request, Ads $ad)
+    public function updatePublishDate(Request $request, Ads $ad)
     {
-        $ad->publish_date = $request->publish ? Carbon::now() : null;
+        $ad->publish_date = intval($request->publish) > 0 ? Carbon::now() : null;
         $ad->save();
         return $this->handleSuccess();
     }

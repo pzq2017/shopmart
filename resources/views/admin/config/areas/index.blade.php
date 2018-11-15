@@ -33,6 +33,9 @@
         </div>
     </div>
 </div>
+<script type="text/html" id="isShow">
+    <input type="checkbox" name="isShow" value="@{{ d.id }}" lay-skin="switch" lay-filter="switchShow" lay-text="显示|隐藏" @{{ d.isShow ? 'checked' : '' }}>
+</script>
 <script type="text/javascript">
     var params = {'pid': {{ $pid }}};
     var route_url = {
@@ -43,6 +46,7 @@
         edit: '{{ route_uri('admin.config.area.edit') }}',
         update: '{{ route_uri('admin.config.area.update') }}',
         delete: '{{ route_uri('admin.config.area.destroy') }}',
+        set_show: '{{ route_uri('admin.config.area.set_show') }}'
     };
     function Lists() {
         Common.dataTableRender({
@@ -60,9 +64,7 @@
                 {field: 'id', title: 'ID', type: 'numbers', sort: true, width: 60, align: 'center'},
                 {field: 'name', title: '地区名称', align: 'center'},
                 {field: 'first_letter', title: '名称首字母', align: 'center'},
-                {field: 'isShow', title: '是否显示', width: 120, align: 'center', templet: function (data) {
-                    return data.isShow == 1 ? '显示' : '隐藏';
-                }},
+                {field: 'isShow', title: '是否显示', width: 150, align: 'center', unresize: true, templet: '#isShow'},
                 {field: 'sort', title: '排序号', width: 80, align: 'center'},
                 {field: 'created_at', title: '创建日期',sort: true, width: 180, align: 'center'},
                 {title: '操作', width: 200, align: 'center', templet: function (data) {
@@ -81,7 +83,11 @@
         }, function (table) {
             table.on('tool(list-datas)', function (obj) {
                 var event = obj.event, data = obj.data;
-                if (event == 'view') {
+                if (event == 'edit') {
+                    Edit(data.id);
+                } else if (event == 'del') {
+                    Delete(data.id);
+                } else if (event == 'view') {
                     params.pid = data.id;
                     Lists();
                 }
@@ -97,7 +103,7 @@
     }
 
     function Save(id, form_datas) {
-        var saveUrl = id > 0 ? Common.getRealRoutePath(route.update, {area: id}) : route_url.save;
+        var saveUrl = id > 0 ? Common.getRealRoutePath(route_url.update, {area: id}) : route_url.save;
         Common.ajaxRequest(saveUrl, form_datas, (id > 0 ? 'PUT' : 'POST'), function (data) {
             if (data.status == 'success') {
                 Common.msg('保存成功!', {icon: 1}, function () {
@@ -128,6 +134,19 @@
             }
         })
     }
+
+    layui.use('form', function () {
+        layui.form.on('switch(switchShow)', function (obj) {
+            var url = Common.getRealRoutePath(route_url.set_show, {area: this.value});
+            Common.ajaxRequest(url, {show: obj.elem.checked ? 1 : 0}, 'PUT', function (data) {
+                if (data.status == 'success') {
+                    Common.msg('设置成功!', {icon: 1});
+                } else {
+                    Common.alertErrors('设置失败', {icon: 2});
+                }
+            });
+        });
+    })
 
     function Search() {
         if (params.name) params.name = '';

@@ -74,4 +74,11 @@ class AreaController extends Controller
         $area->delete();
         return $this->handleSuccess();
     }
+
+    public function setShow(Request $request, Area $area)
+    {
+        $area->isShow = intval($request->show) > 0 ? 1 : 0;
+        $area->save();
+        return $this->handleSuccess();
+    }
 }

@@ -88,6 +88,12 @@ var Common = {
                     } else if(responseJSON.info) {
                         Common.alertErrors(responseJSON.info);
                     }
+                } else if (XMLHttpRequest.responseText) {
+                    var responseText = XMLHttpRequest.responseText;
+                    if (typeof responseText === 'string') {
+                        responseText = eval('(' + responseText + ')');
+                    }
+                    Common.alertErrors(responseText.info);
                 } else {
                     Common.alertErrors('errors:'+textStatus);
                 }

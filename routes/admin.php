@@ -5,6 +5,12 @@ Route::post('/login', 'Admin\LoginController@login')->name('checkLogin');
 
 Route::group(['middleware' => ['admin.auth'], 'namespace' => 'Admin'], function () {
     Route::post('/sigupload/upload', 'SiguploadController@upload')->name('sigupload.upload');
+
+    Route::get('/my_info', 'IndexController@myInfo')->name('my_info');
+    Route::post('/change_my_info', 'IndexController@changeMyInfo')->name('change_my_info');
+    Route::post('/change_password', 'IndexController@changePassword')->name('change_password');
+    Route::get('/logout', 'IndexController@logout')->name('logout');
+
     /**
      * 首页
      */
@@ -33,17 +39,18 @@ Route::group(['middleware' => ['admin.auth'], 'namespace' => 'Admin'], function 
 
         Route::resource('nav', 'NavsController')->except('show');
         Route::get('nav/lists', 'NavsController@lists')->name('nav.lists');
+        Route::put('nav/{nav}/set_show', 'NavsController@setShow')->name('nav.set_show');
 
         Route::resource('ad', 'AdsController')->except('show');
         Route::get('ad/lists', 'AdsController@lists')->name('ad.lists');
-        Route::put('ad/{ad}/update_publish_date', 'AdsController@update_publish_date')->name('ad.update_publish_date');
+        Route::put('ad/{ad}/update_publish_date', 'AdsController@updatePublishDate')->name('ad.update_publish_date');
 
         Route::resource('ad_position', 'AdPositionsController')->except('show');
         Route::get('ad_position/lists', 'AdPositionsController@lists')->name('ad_position.lists');
 
         Route::resource('bank', 'BanksController')->except('show');
         Route::get('bank/lists', 'BanksController@lists')->name('bank.lists');
-        Route::put('bank/{bank}/update_status', 'BanksController@update_status')->name('bank.update_status');
+        Route::put('bank/{bank}/update_status', 'BanksController@updateStatus')->name('bank.update_status');
 
         Route::resource('payment_config', 'PaymentConfigController')->only(['index', 'edit', 'update']);
         Route::get('payment_config/lists', 'PaymentConfigController@lists')->name('payment_config.lists');
@@ -52,6 +59,7 @@ Route::group(['middleware' => ['admin.auth'], 'namespace' => 'Admin'], function 
 
         Route::resource('area', 'AreaController')->except('show');
         Route::get('area/lists', 'AreaController@lists')->name('area.lists');
+        Route::put('area/{area}/set_show', 'AreaController@setShow')->name('area.set_show');
 
         Route::resource('friend_link', 'FriendLinksController')->except('show');
         Route::get('friend_link/lists', 'FriendLinksController@lists')->name('friend_link.lists');

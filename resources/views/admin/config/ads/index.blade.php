@@ -134,7 +134,7 @@
 
         layui.form.on('checkbox(ad_publish)', function (obj) {
             var url = Common.getRealRoutePath(route_url.publish, {ad: this.value});
-            Common.ajaxRequest(url, {publish: obj.elem.checked}, 'PUT', function (data) {
+            Common.ajaxRequest(url, {publish: obj.elem.checked ? 1 : 0}, 'PUT', function (data) {
                 if (data.status == 'success') {
                     Common.msg('设置成功!', {icon: 1});
                 } else {

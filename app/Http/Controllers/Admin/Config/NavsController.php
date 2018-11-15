@@ -28,13 +28,14 @@ class NavsController extends Controller
                     $type = $request->type - 1;
                     return $query->where('type', $type);
                 });
+        $count = $query->count();
         $navs = $this->pagination($query, $request)
                 ->map(function ($nav) {
                     $nav_positions = Navs::NAVS_POSITIONS;
                     $nav->typeName = $nav_positions[$nav->type];
                     return $nav;
                 });
-        return $this->handleSuccess(['total' => $query->count(), 'lists' => $navs]);
+        return $this->handleSuccess(['total' => $count(), 'lists' => $navs]);
     }
 
     public function create(Request $request)
@@ -68,6 +69,13 @@ class NavsController extends Controller
         $nav->isTarget = $request->isTarget;
         $nav->isShow = $request->isShow;
         $nav->sort = $request->sort;
+        $nav->save();
+        return $this->handleSuccess();
+    }
+
+    public function setShow(Request $request, Navs $nav)
+    {
+        $nav->isShow = intval($request->show) > 0 ? 1 : 0;
         $nav->save();
         return $this->handleSuccess();
     }

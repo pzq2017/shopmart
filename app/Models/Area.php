@@ -15,6 +15,8 @@ class Area extends Model
 
     protected $dates = ['created_at', 'updated_at', 'deleted_at'];
 
+    protected $casts = ['isShow' => 'integer'];
+
     const TYPE_PROVINCE = 0;
     const TYPE_CITY = 1;
     const TYPE_DISTRICT = 2;

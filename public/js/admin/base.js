@@ -4,64 +4,62 @@ function goBack(backurl) {
     })
 }
 
-function clearCache() {
-    loading = Common.msg('正在清除缓存，请稍后...', {icon: 16, time: 60000});
-    Common.ajaxRequest(window.params.clearCacheUrl, null, 'GET', function (data) {
-        if (data.status == 'success') {
-            Common.msg('缓存已成功清除', {icon: 1});
-        } else {
-            Common.msg(data.info, {icon: 2});
-        }
-    }, function (errors) {
-        Common.msg('清除缓存操作失败', {icon: 2});
-    });
+function myInfo() {
+    Common.open({
+        title: '个人资料',
+        type: 2,
+        area: ['460px', '430px'],
+        offset: '150px',
+        content: baseParams.myinfo_url
+    })
 }
 
 function editPwd() {
     var dialog = Common.open({
         title: '修改密码', 
         type: 1,
-        area: ['340px', '230px'],
+        area: ['400px', '280px'],
         offset: '150px',
         content: $('#editPwdBox').html(),
-        btn: ['确定', '取消'],
-        yes: function (index, layero) {
-            var post = Common.getParams('.ipwd');
-            loading = Common.msg('正在提交数据，请稍后...', {icon: 16, time: 60000});
-            Common.ajaxRequest(window.params.updPwdUrl, post, 'POST', function (data) {
-                if (data.status == 'success') {
-                    Common.msg('修改成功!', {icon: 1});
-                    $('#editPwdForm')[0].reset();
-                    Common.close(dialog);
-                } else {
-                    Common.msg(data.info, {icon: 2});
-                }
-            }, function (errors) {
-                if (typeof(errors) == 'object') {
-                    for (var error in errors) {
-                        Common.msg(errors[error][0], {icon: 2});
-                        return;
-                    }
-                } else {
-                    Common.msg(errors, {icon: 2});
-                }
-            });
+        success: function () {
+            layui.use('form', function () {
+                layui.form.on('submit(change_password)', function (data) {
+                    loading = Common.msg('正在提交数据，请稍后...', {icon: 16, time: 60000});
+                    Common.ajaxRequest(baseParams.change_password_url, data.field, 'POST', function (data) {
+                        if (data.status == 'success') {
+                            Common.msg('修改成功!', {icon: 1});
+                            Common.close(dialog);
+                        } else {
+                            Common.alertErrors(data.info);
+                        }
+                    });
+                });
+            })
         }
     })
 }
 
 function logout() {
     loading = Common.msg('正在退出账号，请稍后...', {icon: 16, time: 60000});
-    Common.ajaxRequest(window.params.logoutUrl, null, 'GET', function (data) {
+    Common.ajaxRequest(baseParams.logout_url, null, 'GET', function (data) {
         if (data.status == 'success') {
             Common.msg('账号已成功退出', {icon: 1}, function () {
                 location.href = '/admin/login';
             })
         } else {
-            Common.msg(data.info, {icon: 2});
+            Common.alertErrors(data.info);
         }
-    }, function (errors) {
-        Common.msg('账号退出异常', {icon: 2});
+    });
+}
+
+function clearCache() {
+    loading = Common.msg('正在清除缓存，请稍后...', {icon: 16, time: 60000});
+    Common.ajaxRequest(window.params.clearCacheUrl, null, 'GET', function (data) {
+        if (data.status == 'success') {
+            Common.msg('缓存已成功清除', {icon: 1});
+        } else {
+            Common.alertErrors(data.info);
+        }
     });
 }
 

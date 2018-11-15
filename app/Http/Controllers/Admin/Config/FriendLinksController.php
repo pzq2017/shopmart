@@ -25,8 +25,9 @@ class FriendLinksController extends Controller
         $query = FriendLinks::when($request->name, function ($query) use ($request) {
                     return $query->where('name', 'like', '%'.$request->name.'%');
                 });
+        $count = $query->count();
         $ads = $this->pagination($query, $request);
-        return $this->handleSuccess(['total' => $query->count(), 'lists' => $ads]);
+        return $this->handleSuccess(['total' => $count(), 'lists' => $ads]);
     }
 
     public function create(Request $request)
@@ -76,7 +77,7 @@ class FriendLinksController extends Controller
 
     public function isShow(Request $request, FriendLinks $friendLink)
     {
-        $friendLink->isShow = $request->isShow ? 1 : 0;
+        $friendLink->isShow = intval($request->isShow) > 0 ? 1 : 0;
         $friendLink->save();
         return $this->handleSuccess();
     }

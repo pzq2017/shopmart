@@ -24,8 +24,9 @@ class AdPositionsController extends Controller
         $query = AdPositions::when($request->name, function ($query) use ($request) {
                     return $query->where('name', 'like', '%'.$request->name.'%');
                 });
+        $count = $query->count();
         $ad_positions = $this->pagination($query, $request);
-        return $this->handleSuccess(['total' => $query->count(), 'lists' => $ad_positions]);
+        return $this->handleSuccess(['total' => $count(), 'lists' => $ad_positions]);
     }
 
     public function create(Request $request)

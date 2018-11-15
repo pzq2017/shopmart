@@ -112,7 +112,7 @@
     layui.use('form', function () {
         layui.form.on('checkbox(isShow)', function (obj) {
             var url = Common.getRealRoutePath(route_url.show, {friend_link: this.value});
-            Common.ajaxRequest(url, {isShow: obj.elem.checked}, 'PUT', function (data) {
+            Common.ajaxRequest(url, {isShow: obj.elem.checked ? 1 : 0}, 'PUT', function (data) {
                 if (data.status == 'success') {
                     Common.msg('设置成功!', {icon: 1});
                 } else {

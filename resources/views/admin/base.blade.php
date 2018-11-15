@@ -11,7 +11,13 @@
     <script src="/js/common.js" type="text/javascript"></script>
     <script src="/js/admin/base.js" type="text/javascript"></script>
     <script>
-        var baseParams = {csrf_token: '{{ csrf_token() }}', upload_url: '{{ route('admin.sigupload.upload') }}'};
+        var baseParams = {
+            csrf_token: '{{ csrf_token() }}',
+            upload_url: '{{ route('admin.sigupload.upload') }}',
+            myinfo_url: '{{ route('admin.my_info') }}',
+            change_password_url: '{{ route('admin.change_password') }}',
+            logout_url: '{{ route('admin.logout') }}'
+        };
     </script>
 </head>
 <body class="layui-layout-body">
@@ -20,7 +26,7 @@
         <div class="layui-logo">layui 后台布局</div>
         <ul class="layui-nav layui-layout-left">
             @foreach($base['header_menus'] as $menu)
-            <li class="layui-nav-item"><a href="{{ $menu->url }}">{{ $menu->name }}</a></li>
+            <li class="layui-nav-item {{ Request::url() == $menu->url ? 'layui-this' : '' }}"><a href="{{ $menu->url }}">{{ $menu->name }}</a></li>
             @endforeach
         </ul>
         <ul class="layui-nav layui-layout-right">
@@ -33,7 +39,7 @@
                     @endif
                     {{ admin_auth()->loginName }}<span class="layui-nav-more"></span></a>
                 <dl class="layui-nav-child">
-                    <dd><a href="">基本资料</a></dd><hr>
+                    <dd><a href="javascript:myInfo();">个人资料</a></dd><hr>
                     <dd><a href="javascript:editPwd();">修改密码</a></dd><hr>
                     <dd><a href="javascript:logout();">退出系统</a></dd>
                 </dl>
@@ -45,23 +51,34 @@
         @yield('body')
     </div>
 </div>
-<div id='editPwdBox' style='display:none;'>
-  <form id='editPwdForm' autocomplete="off">
-   <table class='table-form'>
-      <tr>
-         <th style="width: 100px;">原密码<font color='red'>*</font>：</th>
-         <td><input type='password' name='oldPwd' class='ipwd' maxLength='16'/></td>
-      </tr>
-      <tr>
-         <th>新密码<font color='red'>*</font>：</th>
-         <td><input type='password' name='newPwd' class='ipwd' maxLength='16'/></td>
-      </tr>
-      <tr>
-         <th>确认密码<font color='red'>*</font>：</th>
-         <td><input type='password' name='newPwd_confirmation' class='ipwd' maxLength='16'/></td>
-      </tr>
-   </table>
-  </form>
+<div id='editPwdBox' class="hidden">
+    <div class="layui-card-body">
+        <form class="layui-form" onsubmit="return false;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">原密码<font color="red">*</font>:</label>
+                <div class="layui-input-inline">
+                    <input type="password" name="oldPwd" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">新密码<font color="red">*</font>:</label>
+                <div class="layui-input-inline">
+                    <input type="password" name="newPwd" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">确认密码<font color="red">*</font>:</label>
+                <div class="layui-input-inline">
+                    <input type="password" name="newPwd_confirmation" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit="" lay-filter="change_password">保存</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 <script>
     layui.use('element');

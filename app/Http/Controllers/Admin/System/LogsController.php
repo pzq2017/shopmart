@@ -42,7 +42,8 @@ class LogsController extends Controller
                 $endDate_time = Carbon::parse($endDate)->timestamp;
                 return $query->whereRaw("UNIX_TIMESTAMP(created_at) < $endDate_time");
             });
+        $count = $query->count();
         $logs = $this->pagination($query, $request);
-        return $this->handleSuccess(['total' => $query->count(), 'lists' => $logs]);
+        return $this->handleSuccess(['total' => $count, 'lists' => $logs]);
     }
 }

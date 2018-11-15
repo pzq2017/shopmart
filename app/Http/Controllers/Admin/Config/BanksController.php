@@ -24,8 +24,9 @@ class BanksController extends Controller
         $query = Banks::when($request->name, function ($query) use ($request) {
                     return $query->where('name', 'like', '%'.$request->name.'%');
                 });
+        $count = $query->count();
         $banks = $this->pagination($query, $request);
-        return $this->handleSuccess(['total' => $query->count(), 'lists' => $banks]);
+        return $this->handleSuccess(['total' => $count(), 'lists' => $banks]);
     }
 
     public function create(Request $request)
@@ -61,9 +62,9 @@ class BanksController extends Controller
         return $this->handleSuccess();
     }
 
-    public function update_status(Request $request, Banks $bank)
+    public function updateStatus(Request $request, Banks $bank)
     {
-        $bank->status = $request->publish ? 1 : 0;
+        $bank->status = intval($request->publish) > 0 ? 1 : 0;
         $bank->save();
         return $this->handleSuccess();
     }
