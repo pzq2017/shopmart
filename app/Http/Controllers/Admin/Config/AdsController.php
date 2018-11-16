@@ -31,7 +31,7 @@ class AdsController extends Controller
                 });
         $count = $query->count();
         $ads = $this->pagination($query, $request);
-        return $this->handleSuccess(['total' => $count(), 'lists' => $ads]);
+        return $this->handleSuccess(['total' => $count, 'lists' => $ads]);
     }
 
     public function create(Request $request)

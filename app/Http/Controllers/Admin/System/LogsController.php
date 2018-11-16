@@ -16,7 +16,7 @@ class LogsController extends Controller
 
     public function index(Request $request)
     {
-        return view('admin.logs.index');
+        return view('admin.system.logs.index');
     }
 
     public function lists(Request $request)

@@ -26,7 +26,7 @@ class BanksController extends Controller
                 });
         $count = $query->count();
         $banks = $this->pagination($query, $request);
-        return $this->handleSuccess(['total' => $count(), 'lists' => $banks]);
+        return $this->handleSuccess(['total' => $count, 'lists' => $banks]);
     }
 
     public function create(Request $request)

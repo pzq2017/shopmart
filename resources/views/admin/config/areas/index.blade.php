@@ -36,6 +36,11 @@
 <script type="text/html" id="isShow">
     <input type="checkbox" name="isShow" value="@{{ d.id }}" lay-skin="switch" lay-filter="switchShow" lay-text="显示|隐藏" @{{ d.isShow ? 'checked' : '' }}>
 </script>
+<script type="text/html" id="actionBar">
+    <a class="layui-btn layui-btn-xs" lay-event="view">查看</a>
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
+</script>
 <script type="text/javascript">
     var params = {'pid': {{ $pid }}};
     var route_url = {
@@ -67,15 +72,7 @@
                 {field: 'isShow', title: '是否显示', width: 150, align: 'center', unresize: true, templet: '#isShow'},
                 {field: 'sort', title: '排序号', width: 80, align: 'center'},
                 {field: 'created_at', title: '创建日期',sort: true, width: 180, align: 'center'},
-                {title: '操作', width: 200, align: 'center', templet: function (data) {
-                    var html = '';
-                    if (data.type < {{ \App\Models\Area::TYPE_DISTRICT }} ) {
-                        html += '<a class="layui-btn layui-btn-xs" lay-event="view">查看</a>';
-                    }
-                    html += '<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>';
-                    html += '<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>';
-                    return html;
-                }},
+                {title: '操作', width: 200, align: 'center', toolbar: '#actionBar'},
             ]],
             done:function (res) {
                 $('#back_grade').attr('prev', res.prev_pid);

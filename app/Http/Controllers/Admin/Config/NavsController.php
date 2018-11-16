@@ -35,7 +35,7 @@ class NavsController extends Controller
                     $nav->typeName = $nav_positions[$nav->type];
                     return $nav;
                 });
-        return $this->handleSuccess(['total' => $count(), 'lists' => $navs]);
+        return $this->handleSuccess(['total' => $count, 'lists' => $navs]);
     }
 
     public function create(Request $request)

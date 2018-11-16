@@ -26,7 +26,7 @@ class AdPositionsController extends Controller
                 });
         $count = $query->count();
         $ad_positions = $this->pagination($query, $request);
-        return $this->handleSuccess(['total' => $count(), 'lists' => $ad_positions]);
+        return $this->handleSuccess(['total' => $count, 'lists' => $ad_positions]);
     }
 
     public function create(Request $request)

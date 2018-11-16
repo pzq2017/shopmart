@@ -19,7 +19,7 @@ class RolesController extends Controller
 
     public function index(Request $request)
     {
-        return view('admin.roles.index');
+        return view('admin.system.roles.index');
     }
 
     public function lists(Request $request)
@@ -32,7 +32,7 @@ class RolesController extends Controller
     public function create()
     {
         $menuPrivileges = json_encode($this->menuPrivileges(0));
-        return view('admin.roles.create', compact('menuPrivileges'));
+        return view('admin.system.roles.create', compact('menuPrivileges'));
     }
 
     public function store(RolesRequest $request)
@@ -53,7 +53,7 @@ class RolesController extends Controller
             $privileges = explode(',', $role->privileges);
         }
         $menuPrivileges = json_encode($this->menuPrivileges(0, $privileges));
-        return view('admin.roles.edit', compact('menuPrivileges', 'role'));
+        return view('admin.system.roles.edit', compact('menuPrivileges', 'role'));
     }
 
     public function update(RolesRequest $request, Roles $role)

@@ -5,7 +5,6 @@ Route::post('/login', 'Admin\LoginController@login')->name('checkLogin');
 
 Route::group(['middleware' => ['admin.auth'], 'namespace' => 'Admin'], function () {
     Route::post('/sigupload/upload', 'SiguploadController@upload')->name('sigupload.upload');
-
     Route::get('/my_info', 'IndexController@myInfo')->name('my_info');
     Route::post('/change_my_info', 'IndexController@changeMyInfo')->name('change_my_info');
     Route::post('/change_password', 'IndexController@changePassword')->name('change_password');
@@ -22,6 +21,7 @@ Route::group(['middleware' => ['admin.auth'], 'namespace' => 'Admin'], function 
     Route::group(['namespace' => 'System', 'prefix' => '/system/', 'as' => 'system.'], function () {
         Route::resource('staff', 'StaffsController')->except('show');
         Route::get('staff/lists', 'StaffsController@lists')->name('staff.lists');
+        Route::get('staff/get_data', 'StaffsController@getData')->name('staff.get_data');
 
         Route::resource('role', 'RolesController')->except('show');
         Route::get('role/lists', 'RolesController@lists')->name('role.lists');
@@ -64,6 +64,20 @@ Route::group(['middleware' => ['admin.auth'], 'namespace' => 'Admin'], function 
         Route::resource('friend_link', 'FriendLinksController')->except('show');
         Route::get('friend_link/lists', 'FriendLinksController@lists')->name('friend_link.lists');
         Route::put('friend_link/{friend_link}/is_show', 'FriendLinksController@isShow')->name('friend_link.is_show');
+    });
+
+    /**
+     * 文章管理
+     */
+    Route::group(['namespace' => 'Article'], function () {
+        Route::resource('article', 'ArticleController')->except('show');
+        Route::get('article/lists', 'ArticleController@lists')->name('article.lists');
+        Route::get('article/set_pub', 'ArticleController@setPub')->name('article.set_pub');
+
+        Route::group(['prefix' => '/article/', 'as' => 'article.'], function () {
+            Route::resource('category', 'CategoryController')->except('show');
+            Route::get('category/lists', 'CategoryController@lists')->name('category.lists');
+        });
     });
 
     /**

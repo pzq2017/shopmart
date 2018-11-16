@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin\System;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\BaseController;
 use App\Http\Requests\Admin\StaffRequest;
 use App\Models\Roles;
 use App\Models\Staffs;
@@ -13,18 +13,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Ramsey\Uuid\Uuid;
 
-class StaffsController extends Controller
+class StaffsController extends BaseController
 {
     use ResponseJsonTrait;
     use ListPageTrait;
 
     public function index(Request $request)
     {
-        $roles = Roles::all();
-        return view('admin.staffs.index', compact('roles'));
+        return view('admin.system.staffs.index');
     }
 
     public function lists(Request $request)
+    {
+        $roles = Roles::all();
+        return view('admin.system.staffs.list', compact('roles', 'params'));
+    }
+
+    public function getData(Request $request)
     {
         $query = Staffs::with('role')
             ->when($request->loginName, function ($query) use ($request) {
@@ -35,13 +40,13 @@ class StaffsController extends Controller
             });
         $count = $query->count();
         $staffs = $this->pagination($query, $request);
-        return $this->handleSuccess(['total' => $count(), 'lists' => $staffs]);
+        return $this->handleSuccess(['total' => $count, 'lists' => $staffs]);
     }
 
     public function create()
     {
         $roles = Roles::all();
-        return view('admin.staffs.create', compact('roles'));
+        return view('admin.system.staffs.create', compact('roles'));
     }
 
     public function store(StaffRequest $request, StorageService $storageService)
@@ -67,7 +72,7 @@ class StaffsController extends Controller
     public function edit(Staffs $staff)
     {
         $roles = Roles::all();
-        return view('admin.staffs.edit', compact('roles', 'staff'));
+        return view('admin.system.staffs.edit', compact('roles', 'staff'));
     }
 
     public function update(StaffRequest $request, Staffs $staff, StorageService $storageService)

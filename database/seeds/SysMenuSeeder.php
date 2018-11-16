@@ -204,11 +204,11 @@ class SysMenuSeeder extends Seeder
             '文章管理' => [
                 [
                     'name' => '文章管理',
-                    'url' => '',
+                    'url' => route('admin.article.index'),
                 ],
                 [
                     'name' => '文章分类',
-                    'url' => '',
+                    'url' => route('admin.article.category.index'),
                 ],
             ],
         ];
