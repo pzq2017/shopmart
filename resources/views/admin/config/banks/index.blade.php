@@ -1,43 +1,36 @@
-<div class="layadmin-tabsbody-item layui-show">
-    <div class="layui-card layadmin-header"></div>
-    <div class="layui-fluid">
-        <div class="layui-row layui-col-space15">
-            <div class="layui-col-md12">
-                <div class="layui-card" id="content_box">
-                    <div class="layui-form layui-card-header card-header-auto">
-                        <form name="banksSearch" onsubmit="return false;">
-                            <div class="layui-form-item">
-                                <div class="layui-inline">
-                                    <label class="layui-form-label">广告位置名称</label>
-                                    <div class="layui-input-block">
-                                        <input type="text" name="name" autocomplete="off" class="layui-input">
-                                    </div>
-                                </div>
-                                <div class="layui-inline">
-                                    <button class="layui-btn" onclick="Search();">
-                                        <i class="layui-icon layui-icon-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="layui-card-body">
-                        <div><button class="layui-btn" onclick="Edit(0)">新增</button></div>
-                        <table class="layui-hide" id="list-datas" lay-filter="list-datas"></table>
+@section('search')
+    <div class="layui-form layui-card-header card-header-auto">
+        <form name="banksSearch" onsubmit="return false;">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">广告位置名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="name" autocomplete="off" class="layui-input">
                     </div>
                 </div>
+                <div class="layui-inline">
+                    <button class="layui-btn" onclick="Search();">
+                        <i class="layui-icon layui-icon-search"></i>
+                    </button>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
-</div>
+@endsection
+@section('handle_button')
+    <div><button class="layui-btn" onclick="Edit(0)">新增</button></div>
+@endsection
+@extends('admin.layout')
 <script type="text/html" id="actionBar">
     <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
 </script>
+<script type="text/html" id="isPublish">
+    <input type="checkbox" name="bank_publish" value="@{{ d.id }}" lay-filter="bank_publish" title="发布" @{{ d.status ? 'checked' : '' }}>
+</script>
 <script type="text/javascript">
-    var params = {};
+    var search = {}, curr_page = 1;
     var route_url = {
-        index: '{{ route('admin.config.bank.index') }}',
         lists: '{{ route('admin.config.bank.lists') }}',
         create: '{{ route('admin.config.bank.create') }}',
         save: '{{ route('admin.config.bank.store') }}',
@@ -46,28 +39,41 @@
         delete: '{{ route_uri('admin.config.bank.destroy') }}',
         publish: '{{ route_uri('admin.config.bank.update_status') }}',
     };
-    function Lists() {
-        Common.dataTableRender({
+    function Lists(page) {
+        if (!page) page = curr_page;
+        Common.dataTableRender(page, {
             url: route_url.lists,
-            param: params,
+            where: search,
             cols: [[
                 {field: 'id', title: 'ID', sort: true, width: 60, align: 'center'},
                 {field: 'name', title: '银行名称', align: 'center'},
                 {field: 'sort', title: '排序号', width: 80, align: 'center'},
-                {field: 'status', title: '发布状态', width: 120, align: 'center', unresize: true, templet: function (data) {
-                    var html = '<input type="checkbox" name="bank_publish" value="'+data.id+'" title="发布" lay-filter="bank_publish" '+(data.status ? 'checked' : '')+'>';
-                    return html;
-                }},
+                {field: 'status', title: '发布状态', width: 120, align: 'center', unresize: true, templet: '#isPublish'},
                 {field: 'created_at', title: '创建日期',sort: true, width: 200, align: 'center'},
                 {title: '操作', toolbar: '#actionBar', width: 150, align: 'center'},
             ]],
+            done: function (res, curr) {
+                curr_page = curr;
+            }
+        }, function (table) {
+            table.on('tool(list-datas)', function (obj) {
+                var event = obj.event, data = obj.data;
+                if (event == 'edit') {
+                    Edit(data.id);
+                } else if (event == 'delete') {
+                    Delete(data.id);
+                }
+            });
+            $('.card-box').addClass('hidden');
+            $('.card-box').eq(0).removeClass('hidden');
         });
     }
 
     function Edit(id) {
         var url = id ? Common.getRealRoutePath(route_url.edit, {bank: id}) : route_url.create;
         Common.loadPage(url, {}, function (page) {
-            $('#content_box').html(page);
+            $('.card-box').addClass('hidden');
+            $('#content_box').html(page).removeClass('hidden');
         });
     }
 
@@ -76,7 +82,7 @@
         Common.ajaxRequest(saveUrl, form_datas, (id > 0 ? 'PUT' : 'POST'), function (data) {
             if (data.status == 'success') {
                 Common.msg('保存成功!', {icon: 1}, function () {
-                    goBack(route_url.index);
+                    Lists(id > 0 ? curr_page : 1);
                 });
             } else {
                 Common.alertErrors(data.info);
@@ -94,7 +100,7 @@
                     if (data.status == 'success') {
                         Common.close(confirm_dialog);
                         Common.msg("删除成功！", {icon: 1}, function () {
-                            Lists();
+                            Lists(1);
                         });
                     } else {
                         Common.alertErrors(data.info);
@@ -118,14 +124,14 @@
     })
 
     function Search() {
-        if (params.name) params.name = '';
+        search = {};
         var form = document.forms['banksSearch'];
         if (form.name.value)
-            params.name = form.name.value;
-        Lists();
+            search.name = form.name.value;
+        Lists(1);
     }
 
     $(document).ready(function () {
-        Lists();
+        Lists(1);
     });
 </script>

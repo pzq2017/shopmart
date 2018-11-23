@@ -21,7 +21,7 @@ Route::group(['middleware' => ['admin.auth'], 'namespace' => 'Admin'], function 
     Route::group(['namespace' => 'System', 'prefix' => '/system/', 'as' => 'system.'], function () {
         Route::resource('staff', 'StaffsController')->except('show');
         Route::get('staff/lists', 'StaffsController@lists')->name('staff.lists');
-        Route::get('staff/get_data', 'StaffsController@getData')->name('staff.get_data');
+        Route::put('staff/{staff}/enabled', 'StaffsController@setEnabled')->name('staff.enabled');
 
         Route::resource('role', 'RolesController')->except('show');
         Route::get('role/lists', 'RolesController@lists')->name('role.lists');
@@ -73,10 +73,12 @@ Route::group(['middleware' => ['admin.auth'], 'namespace' => 'Admin'], function 
         Route::resource('article', 'ArticleController')->except('show');
         Route::get('article/lists', 'ArticleController@lists')->name('article.lists');
         Route::get('article/set_pub', 'ArticleController@setPub')->name('article.set_pub');
+        Route::put('article/{article}/publish', 'ArticleController@publish')->name('article.publish');
 
         Route::group(['prefix' => '/article/', 'as' => 'article.'], function () {
             Route::resource('category', 'CategoryController')->except('show');
             Route::get('category/lists', 'CategoryController@lists')->name('category.lists');
+            Route::put('category/{category}/publish', 'CategoryController@publish')->name('category.publish');
         });
     });
 

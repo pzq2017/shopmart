@@ -16,10 +16,13 @@ class CreateArticleTable extends Migration
         Schema::create('article', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedTinyInteger('catid')->default(0);
-            $table->boolean('single_page')->default(false);
             $table->string('title', 128)->nullable();
-            $table->mediumText('text')->nullable();
-            $table->date('pub_date')->nullable();
+            $table->longText('text')->nullable();
+            $table->string('image_path', 108)->nullable();
+            $table->string('desc', 256)->nullable();
+            $table->string('author', 32)->nullable();
+            $table->unsignedInteger('view_count')->default(0);
+            $table->dateTime('pub_date')->nullable();
             $table->integer('sort')->default(0);
             $table->timestamps();
             $table->softDeletes();

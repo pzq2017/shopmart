@@ -11,7 +11,7 @@ class Article extends Model
 
     protected $table = 'article';
 
-    protected $fillable = ['catid', 'title', 'text', 'single_page', 'sort'];
+    protected $fillable = ['catid', 'title', 'text', 'sort', 'image_path', 'desc', 'author'];
 
     protected $dates = ['pub_date', 'created_at', 'updated_at', 'deleted_at'];
 

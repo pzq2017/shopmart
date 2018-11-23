@@ -1,17 +1,4 @@
-<div class="layadmin-tabsbody-item layui-show">
-    <div class="layui-card layadmin-header"></div>
-    <div class="layui-fluid">
-        <div class="layui-row layui-col-space15">
-            <div class="layui-col-md12">
-                <div class="layui-card" id="content_box">
-                    <div class="layui-card-body">
-                        <table class="layui-hide" id="list-datas" lay-filter="list-datas"></table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+@extends('admin.layout')
 <script type="text/html" id="debug">
     <input type="checkbox" name="debug" value="@{{ d.id }}" lay-skin="switch" lay-filter="switchDebug" lay-text="开启|关闭" @{{ d.debug ? 'checked' : '' }}>
 </script>
@@ -22,9 +9,8 @@
     <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>
 </script>
 <script type="text/javascript">
-    var params = {};
+    var search = {};
     var route_url = {
-        index: '{{ route('admin.config.payment_config.index') }}',
         lists: '{{ route('admin.config.payment_config.lists') }}',
         edit: '{{ route_uri('admin.config.payment_config.edit') }}',
         update: '{{ route_uri('admin.config.payment_config.update') }}',
@@ -32,9 +18,9 @@
         debug: '{{ route_uri('admin.config.payment_config.debug') }}',
     };
     function Lists() {
-        Common.dataTableRender({
+        Common.dataTableRender(1, {
             url: route_url.lists,
-            param: params,
+            where: search,
             page: false,
             cols: [[
                 {field: 'id', title: 'ID', sort: true, width: 60, align: 'center'},
@@ -47,14 +33,24 @@
                 {field: 'enabled', title: '是否启用', align: 'center', unresize: true, templet: '#enabled'},
                 {field: 'updated_at', title: '更新日期',sort: true, width: 200, align: 'center'},
                 {title: '操作', toolbar: '#actionBar', width: 100, align: 'center'},
-            ]],
+            ]]
+        }, function (table) {
+            table.on('tool(list-datas)', function (obj) {
+                var event = obj.event, data = obj.data;
+                if (event == 'edit') {
+                    Edit(data.id);
+                }
+            });
+            $('.card-box').addClass('hidden');
+            $('.card-box').eq(0).removeClass('hidden');
         });
     }
 
     function Edit(id) {
         var url = Common.getRealRoutePath(route_url.edit, {payment_config: id});
         Common.loadPage(url, {}, function (page) {
-            $('#content_box').html(page);
+            $('.card-box').addClass('hidden');
+            $('#content_box').html(page).removeClass('hidden');
         });
     }
 
@@ -63,7 +59,7 @@
         Common.ajaxRequest(saveUrl, form_datas, 'PUT', function (data) {
             if (data.status == 'success') {
                 Common.msg('保存成功!', {icon: 1}, function () {
-                    goBack(route_url.index);
+                    Lists(1);
                 });
             } else {
                 Common.alertErrors(data.info);

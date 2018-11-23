@@ -148,11 +148,13 @@ var Common = {
         routeUrl += append.join('&');
         return routeUrl;
     },
-    dataTableRender: function (options, func) {
+    dataTableRender: function (curr_page, options, func) {
         var opt = {
             elem: '#list-datas',
-            where: $.extend({'_token': baseParams.csrf_token}, options.param),
-            page: true,
+            page: {curr: curr_page},
+            loading: true,
+            autoSort: false,
+            where: {},
             limit: Const.defaultPageSize,
             limits: Const.defaultPageSizeOptions,
             parseData: function (res) {
@@ -167,16 +169,22 @@ var Common = {
             },
         };
         layui.use('table', function () {
-            layui.table.render($.extend(opt, options));
-            layui.table.on('tool(list-datas)', function (obj) {
-                var event = obj.event, data = obj.data;
-                if (event == 'edit') {
-                    Edit(data.id);
-                } else if (event == 'del') {
-                    Delete(data.id);
-                }
-            })
-            $.isFunction(func) && func(layui.table);
+            var table = layui.table;
+            opt = $.extend(opt, options);
+            table.render(opt);
+            table.on('sort(list-datas)', function (obj) {
+                table.reload('list-datas', {
+                    initSort: obj,
+                    where: $.extend(opt.where, {
+                        field: obj.field,
+                        order: obj.type
+                    }),
+                    page: {
+                        curr: 1
+                    }
+                });
+            });
+            $.isFunction(func) && func(table);
         });
     },
 };

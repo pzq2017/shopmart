@@ -1,81 +1,109 @@
-<div class="layadmin-tabsbody-item layui-show">
-    <div class="layui-card layadmin-header"></div>
-    <div class="layui-fluid">
-        <div class="layui-row layui-col-space15">
-            <div class="layui-col-md12">
-                <div class="layui-card" id="content_box">
-                    <div class="layui-form layui-card-header card-header-auto">
-                        <form name="banksSearch" onsubmit="return false;">
-                            <div class="layui-form-item">
-                                <div class="layui-inline">
-                                    <label class="layui-form-label">文章名称</label>
-                                    <div class="layui-input-block">
-                                        <input type="text" name="name" autocomplete="off" class="layui-input">
-                                    </div>
-                                </div>
-                                <div class="layui-inline">
-                                    <button class="layui-btn" onclick="Search();">
-                                        <i class="layui-icon layui-icon-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="layui-card-body">
-                        <div><button class="layui-btn" onclick="Edit(0)">新增</button></div>
-                        <table class="layui-hide" id="list-datas" lay-filter="list-datas"></table>
+@section('search')
+    <div class="layui-form layui-card-header card-header-auto">
+        <form name="articleSearch" onsubmit="return false;">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">类型</label>
+                    <div class="layui-input-block">
+                        <select name="types" lay-filter="article_category">
+                            <option value="">请选择</option>
+                            <option value="{{ \App\Models\ArticleCategory::TYPE_SINGLE }}">单页</option>
+                            <option value="{{ \App\Models\ArticleCategory::TYPE_TEXT_LIST }}">文字列表</option>
+                            <option value="{{ \App\Models\ArticleCategory::TYPE_TEXT_AND_PICTURE_LIST }}">图文列表</option>
+                        </select>
                     </div>
                 </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">标题</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="title" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn" onclick="Search();">
+                        <i class="layui-icon layui-icon-search"></i>
+                    </button>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
-</div>
+@endsection
+@section('handle_button')
+    <div><button class="layui-btn" onclick="Edit(0)">新增</button></div>
+@endsection
+@extends('admin.layout')
+<link rel="stylesheet" href="/plugin/kindeditor/themes/default/default.css">
+<script type="text/javascript" src="/plugin/kindeditor/kindeditor.js"></script>
+<script type="text/javascript" src="/plugin/kindeditor/lang/zh-CN.js"></script>
 <script type="text/html" id="actionBar">
     <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
 </script>
+<script type="text/html" id="isPublish">
+    <input type="checkbox" name="publish" value="@{{ d.id }}" lay-filter="publish" title="发布" @{{ d.pub_date ? 'checked' : '' }}>
+</script>
 <script type="text/javascript">
-    var params = {};
+    var search = {}, curr_page = 1, editor;
     var route_url = {
-        index: '{{ route('admin.article.index') }}',
         lists: '{{ route('admin.article.lists') }}',
         create: '{{ route('admin.article.create') }}',
         save: '{{ route('admin.article.store') }}',
         edit: '{{ route_uri('admin.article.edit') }}',
         update: '{{ route_uri('admin.article.update') }}',
         delete: '{{ route_uri('admin.article.destroy') }}',
+        publish: '{{ route_uri('admin.article.publish') }}',
     };
-    function Lists() {
-        Common.dataTableRender({
+    function Lists(page) {
+        if (!page) page = curr_page;
+        Common.dataTableRender(page, {
             url: route_url.lists,
-            param: params,
+            where: search,
             cols: [[
                 {field: 'id', title: 'ID', sort: true, width: 60, align: 'center'},
-                {field: 'name', title: '银行名称', align: 'center'},
-                {field: 'sort', title: '排序号', width: 80, align: 'center'},
-                {field: 'status', title: '发布状态', width: 120, align: 'center', unresize: true, templet: function (data) {
-                    var html = '<input type="checkbox" name="bank_publish" value="'+data.id+'" title="发布" lay-filter="bank_publish" '+(data.status ? 'checked' : '')+'>';
-                    return html;
+                {field: 'catid', title: '类别', width: 150, align: 'center', templet: function (data) {
+                    return data.category ? data.category.name : '';
                 }},
+                {field: 'title', title: '标题', align: 'center'},
+                {field: 'author', title: '作者', width: 100, align: 'center'},
+                {field: 'view_count', title: '浏览次数', width: 100, align: 'center'},
+                {field: 'sort', title: '排序号', width: 80, align: 'center'},
+                {field: 'status', title: '发布状态', width: 120, align: 'center', unresize: true, templet: '#isPublish'},
                 {field: 'created_at', title: '创建日期',sort: true, width: 200, align: 'center'},
                 {title: '操作', toolbar: '#actionBar', width: 150, align: 'center'},
             ]],
+            done: function (res, curr) {
+                curr_page = curr;
+            }
+        }, function (table) {
+            table.on('tool(list-datas)', function (obj) {
+                var event = obj.event, data = obj.data;
+                if (event == 'edit') {
+                    Edit(data.id);
+                } else if (event == 'del') {
+                    Delete(data.id);
+                }
+            });
+            $('.card-box').addClass('hidden');
+            $('.card-box').eq(0).removeClass('hidden');
         });
     }
 
     function Edit(id) {
         var url = id ? Common.getRealRoutePath(route_url.edit, {article: id}) : route_url.create;
         Common.loadPage(url, {}, function (page) {
-            $('#content_box').html(page);
+            $('.card-box').addClass('hidden');
+            $('#content_box').html(page).removeClass('hidden');
+            editor = KindEditor.create('textarea[name="text"]', {width: '90%', height: '400px', filterMode: false});
         });
     }
 
     function Save(id, form_datas) {
         var saveUrl = id > 0 ? Common.getRealRoutePath(route_url.update, {article: id}) : route_url.save;
+        form_datas.text = editor.html();
         Common.ajaxRequest(saveUrl, form_datas, (id > 0 ? 'PUT' : 'POST'), function (data) {
             if (data.status == 'success') {
                 Common.msg('保存成功!', {icon: 1}, function () {
-                    goBack(route_url.index);
+                    Lists(id > 0 ? curr_page : 1);
                 });
             } else {
                 Common.alertErrors(data.info);
@@ -85,15 +113,15 @@
 
     function Delete(id) {
         var confirm_dialog = Common.confirm({
-            title: '删除银行',
-            content: '您确定要删除当前银行信息吗？',
+            title: '删除文章',
+            content: '您确定要删除当前文章信息吗？',
             yes: function () {
                 loading = Common.msg('正在删除中,请稍后...', {icon: 16, time: 60000});
                 Common.ajaxRequest(Common.getRealRoutePath(route_url.delete, {article: id}), null, 'DELETE', function (data) {
                     if (data.status == 'success') {
                         Common.close(confirm_dialog);
                         Common.msg("删除成功！", {icon: 1}, function () {
-                            Lists();
+                            Lists(1);
                         });
                     } else {
                         Common.alertErrors(data.info);
@@ -104,8 +132,9 @@
     }
 
     layui.use('form', function () {
-        layui.form.on('checkbox(bank_publish)', function (obj) {
-            var url = Common.getRealRoutePath(route_url.publish, {bank: this.value});
+        layui.form.render();
+        layui.form.on('checkbox(publish)', function (obj) {
+            var url = Common.getRealRoutePath(route_url.publish, {article: this.value});
             Common.ajaxRequest(url, {publish: obj.elem.checked ? 1 : 0}, 'PUT', function (data) {
                 if (data.status == 'success') {
                     Common.msg('设置成功!', {icon: 1});
@@ -117,14 +146,16 @@
     })
 
     function Search() {
-        if (params.name) params.name = '';
-        var form = document.forms['banksSearch'];
-        if (form.name.value)
-            params.name = form.name.value;
-        Lists();
+        search = {};
+        var form = document.forms['articleSearch'];
+        if (form.title.value)
+            search.title = form.title.value;
+        if (form.types.value)
+            search.types = form.types.value;
+        Lists(1);
     }
 
     $(document).ready(function () {
-        Lists();
+        Lists(1);
     });
 </script>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Article;
 
+use App\Http\Requests\Admin\ArticleCategoryRequest;
 use App\Models\ArticleCategory;
 use App\Traits\ListPageTrait;
 use App\Traits\ResponseJsonTrait;
@@ -33,28 +34,41 @@ class CategoryController extends Controller
         return view('admin.article.category.create');
     }
 
-    public function store(Request $request)
+    public function store(ArticleCategoryRequest $request)
     {
+        ArticleCategory::create([
+            'pid' => 0,
+            'type' => $request->type,
+            'name' => $request->name,
+            'sort' => $request->sort ?? 0
+        ]);
         return $this->handleSuccess();
     }
 
-    public function edit()
+    public function edit(ArticleCategory $category)
     {
-        return view('admin.article.category.edit');
+        return view('admin.article.category.edit', compact('category'));
     }
 
-    public function update(Request $request)
+    public function update(ArticleCategoryRequest $request, ArticleCategory $category)
     {
+        $category->type = $request->type;
+        $category->name = $request->name;
+        $category->sort = $request->sort ?? 0;
+        $category->save();
         return $this->handleSuccess();
     }
 
-    public function destroy()
+    public function destroy(ArticleCategory $category)
     {
+        $category->delete();
         return $this->handleSuccess();
     }
 
-    public function updateStatus(Request $request)
+    public function publish(Request $request, ArticleCategory $category)
     {
+        $category->status = intval($request->publish) > 0 ? 1 : 0;
+        $category->save();
         return $this->handleSuccess();
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin\System;
 
-use App\Http\Controllers\Admin\BaseController;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StaffRequest;
 use App\Models\Roles;
 use App\Models\Staffs;
@@ -13,23 +13,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Ramsey\Uuid\Uuid;
 
-class StaffsController extends BaseController
+class StaffsController extends Controller
 {
     use ResponseJsonTrait;
     use ListPageTrait;
 
     public function index(Request $request)
     {
-        return view('admin.system.staffs.index');
+        $roles = Roles::all();
+        return view('admin.system.staffs.index', compact('roles'));
     }
 
     public function lists(Request $request)
-    {
-        $roles = Roles::all();
-        return view('admin.system.staffs.list', compact('roles', 'params'));
-    }
-
-    public function getData(Request $request)
     {
         $query = Staffs::with('role')
             ->when($request->loginName, function ($query) use ($request) {
@@ -64,7 +59,7 @@ class StaffsController extends BaseController
             'staffEmail' => $request->staffEmail,
             'staffPhoto' => $staffPhoto,
             'staffRoleId' => $request->staffRoleId,
-            'status' => $request->status,
+            'status' => $request->status ?? Staffs::STATUS_DISABLED,
         ]);
         return $this->handleSuccess();
     }
@@ -103,6 +98,13 @@ class StaffsController extends BaseController
             return $this->handleFail('不能删除超管账户.');
         }
         $staff->delete();
+        return $this->handleSuccess();
+    }
+
+    public function setEnabled(Request $request, Staffs $staff)
+    {
+        $staff->status = intval($request->enabled) > 0 ? 1 : 0;
+        $staff->save();
         return $this->handleSuccess();
     }
 }

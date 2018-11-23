@@ -1,5 +1,5 @@
 <div class="layui-card-header">
-    <button class="layui-btn layui-btn-normal" onclick="goBack('{{ route('admin.config.bank.index') }}')">返回</button>
+    <button class="layui-btn layui-btn-normal" onclick="Lists()">返回</button>
 </div>
 <div class="layui-card-body">
     <form class="layui-form" onsubmit="return false;">
