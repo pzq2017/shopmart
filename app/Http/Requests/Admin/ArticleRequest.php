@@ -4,7 +4,6 @@ namespace App\Http\Requests\Admin;
 
 use App\Models\ArticleCategory;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class ArticleRequest extends FormRequest
 {

@@ -79,7 +79,7 @@ class StaffsController extends Controller
         }
 
         $staffPhoto = $request->staffPhoto;
-        if ($staffPhoto && !starts_with($staffPhoto, '/staff')) {
+        if ($staffPhoto && !starts_with($staffPhoto, 'staff/')) {
             $staff->staffPhoto = $storageService->move('temp/'.$staffPhoto, ['target_dir' => 'staff']);
         }
 

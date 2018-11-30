@@ -1,38 +1,36 @@
 var loading = 0;
-var layer = layui.use('layer', function () {
-    return layui.layer;
-});
+layui.use('layer');
 var Common = {
     open: function (options) {
         var opts = {};
         opts = $.extend(opts, {offset: '100px'}, options);
-        return layer.open(opts);
+        layer.open(opts);
     },
     confirm: function (options) {
         var opts = {};
         opts = $.extend(opts, {title: '系统提示', offset: '150px'}, options);
-        return layer.confirm(opts.content, {icon: 3, title: opts.title, offset: opts.offset}, options.yes, options.cancel);
+        layer.confirm(opts.content, {icon: 3, title: opts.title, offset: opts.offset}, options.yes, options.cancel);
     },
     msg: function (msg, options, func) {
         if (typeof(options) !== 'function') {
             var opts = {};
-            opts = $.extend(opts, {time: 2000, shade: [0.4, '#000000']}, options);
-            return layer.msg(msg, opts, func);
+            opts = $.extend(opts, {time: 3000, shade: [0.5, '#000000']}, options);
+            layer.msg(msg, opts, func);
         } else {
-            return layer.msg(msg, options);
+            layer.msg(msg, options);
         }
     },
     tips: function (content, selector, options) {
         var opts = {};
-        opts = $.extend(opts, {tips: 1, time: 2000, maxWidth: 260}, options);
-        return layer.tips(content, selector, opts);
+        opts = $.extend(opts, {tips: 1, time: 3000, maxWidth: 260}, options);
+        layer.tips(content, selector, opts);
     },
     loading: function () {
-        return layer.load(2);
+        layer.load(2);
     },
     close: function (index) {
         loading = 0;
-        return layer.close(index);
+        layer.close(index);
     },
     alertErrors: function (errors) {
         if (typeof(errors) == 'object') {

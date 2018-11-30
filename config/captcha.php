@@ -2,7 +2,7 @@
 
 return [
 
-    'characters' => '12346789abcdefghjmnpqrtuxyzABCDEFGHJMNPQRTUXYZ',
+    'characters' => '2346789ABCDEFGHJMNPQRTUXYZ',
 
     'default'   => [
         'length'    => 4,
@@ -30,11 +30,11 @@ return [
     ],
 
     'inverse'   => [
-        'length'    => 5,
+        'length'    => 4,
         'width'     => 120,
         'height'    => 36,
         'quality'   => 90,
-        'sensitive' => true,
+        'sensitive' => false,
         'angle'     => 12,
         'sharpen'   => 10,
         'blur'      => 2,

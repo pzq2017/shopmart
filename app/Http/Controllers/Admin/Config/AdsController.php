@@ -42,10 +42,11 @@ class AdsController extends Controller
 
     public function store(AdsRequest $request, StorageService $storageService)
     {
-        $image_path = $request->image_path;
-        if ($image_path && !starts_with($image_path, 'ad/')) {
-            $image_path = $storageService->move('temp/'.$image_path, ['target_dir' => 'ad']);
+        $image_path = $storageService->move('temp/'.$request->image_path, ['target_dir' => 'ad']);
+        if (!$image_path) {
+            return $this->handleFail('图片保存失败');
         }
+
         Ads::create([
             'type' => AdPositions::TYPE_PC_PLATFORM,
             'posid' => $request->posid,
@@ -74,13 +75,15 @@ class AdsController extends Controller
     public function update(AdsRequest $request, Ads $ad, StorageService $storageService)
     {
         $image_path = $request->image_path;
-        if ($image_path && !starts_with($image_path, 'ad/')) {
-            $image_path = $storageService->move('temp/'.$image_path, ['target_dir' => 'ad']);
+        if (!starts_with($image_path, 'ad/')) {
+            $ad->image_path = $storageService->move('temp/'.$image_path, ['target_dir' => 'ad']);
+            if (!$ad->image_path) {
+                return $this->handleFail('图片保存失败');
+            }
         }
         $ad->posid = $request->posid;
         $ad->name = $request->name;
         $ad->url = $request->url ?? '';
-        $ad->image_path = $image_path;
         $ad->start_date = $request->start_date;
         $ad->end_date = $request->end_date;
         $ad->sort = $request->sort ?? 0;

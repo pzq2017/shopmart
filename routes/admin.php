@@ -67,6 +67,19 @@ Route::group(['middleware' => ['admin.auth'], 'namespace' => 'Admin'], function 
     });
 
     /**
+     * 会员管理
+     */
+    Route::group(['namespace' => 'Member'], function () {
+        Route::group(['prefix' => '/member/', 'as' => 'member.'], function () {
+            Route::resource('grade', 'GradeController')->except(['destroy', 'show']);
+            Route::get('grade/lists', 'GradeController@lists')->name('grade.lists');
+        });
+        Route::resource('member', 'MemberController')->except('show');
+        Route::get('member/lists', 'MemberController@lists')->name('member.lists');
+        Route::put('member/{member}/activate', 'MemberController@activate')->name('member.activate');
+    });
+
+    /**
      * 文章管理
      */
     Route::group(['namespace' => 'Article'], function () {

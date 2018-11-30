@@ -1,0 +1,192 @@
+.register_body {
+    background: #f9f9f8 !important;
+}
+.header {
+    height: 110px;
+}
+.logo {
+    float: left;
+}
+.main {
+    margin: 0 auto;
+}
+.main-center {
+    width: 100%;
+    height: auto;
+    background: #fff;
+    border: 1px solid #e1dfda;
+}
+.center-top {
+    height: 30px;
+    border-bottom: 1px solid #e1dfda;
+    padding: 10px 20px;
+    line-height: 30px;
+}
+.center-top .title-info {
+    float: left;
+    font-size: 16px;
+    font-family: "微软雅黑", Arial, Helvetica, sans-serif;
+    color: red;
+}
+.center-top .title-login {
+    float: right;
+    font-family: "微软雅黑", Arial, Helvetica, sans-serif;
+    color: #63625d;
+}
+.center-top .title-login a {
+    color: #009688;
+}
+.center-bottom {
+    height: auto;
+    padding: 50px 0px 50px 190px;
+}
+.register-form {
+    position: relative;
+}
+.form-item {
+    padding: 10px 0px;
+}
+.form-item-name {
+    float: left;
+    font-size: 15px;
+    color: #333;
+    width: 130px;
+    text-align: right;
+    line-height: 36px;
+    font-family: "微软雅黑", Arial, Helvetica, sans-serif;
+}
+.form-item-name i {
+    color: red;
+}
+.form-item-input {
+    float: left;
+    padding-left: 5px;
+    display: inline;
+    position: relative;
+}
+.form-item-input input {
+    line-height: 34px;
+    vertical-align: middle;
+    font-family: "微软雅黑", Arial, Helvetica, sans-serif;
+    color: #000;
+    font-size: 12px;
+    text-indent: 0px;
+    padding: 0 10px 0 10px;
+    width: 250px;
+}
+.inp {
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    outline: 0;
+}
+.inp-focus {
+    height: 32px;
+    border: 2px solid #7fcbfe;
+    box-shadow: 0px 0px 3px #7fcbfe;
+    -webkit-box-shadow: 0px 0px 3px #7fcbfe;
+    -moz-box-shadow: 0px 0px 3px #7fcbfe;
+    -ms-box-shadow: 0px 0px 3px #7fcbfe;
+    -o-box-shadow: 0px 0px 3px #7fcbfe;
+}
+.inp-blur {
+    height: 32px;
+    border: 2px solid #f77799;
+    box-shadow: 0px 0px 3px #f77799;
+    -webkit-box-shadow: 0px 0px 3px #f77799;
+    -moz-box-shadow: 0px 0px 3px #f77799;
+    -ms-box-shadow: 0px 0px 3px #f77799;
+    -o-box-shadow: 0px 0px 3px #f77799;
+}
+.form-item .prompt {
+    float: left;
+    line-height: 36px;
+}
+.form-item .prompt .pwd-strength{
+    display: inline-block;
+    color: #ffffff;
+    height: 20px;
+    line-height: 20px;
+    float: left;
+    text-align: center;
+    width: 24px;
+    margin-left: 2px;
+    margin-top: 8px;
+    background: none #CCCCCC;
+}
+.form-agreement {
+    height: 25px;
+    padding-left: 134px;
+    line-height: 25px;
+    overflow: hidden;
+    color: #666666;
+}
+.form-agreement label {
+    float: left;
+    cursor: pointer;
+    outline: none;
+    height: 25px;
+    line-height: 25px;
+    padding-right: 5px;
+}
+.form-agreement label i {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    float: left;
+    border: 1px solid #009688;
+    margin-top: 3px;
+}
+.form-agreement label i.checked {
+    background: url("../imgs/agreement.png") center no-repeat;
+    background-size: 16px;
+}
+.form-agreement label span {
+    float: left;
+    display: inline;
+    margin-left: 10px;
+    font-family: "微软雅黑", Arial, Helvetica, sans-serif;
+}
+.form-agreement a {
+    color: #009688;
+}
+.form-agreement a:hover {
+    text-decoration: underline;
+}
+.form-button {
+    padding-left: 134px;
+    margin-top: 20px;
+    height: 36px;
+    overflow: hidden;
+}
+.btn-register {
+    color: #ffffff;
+    background: #e6133c;
+    font-size: 16px;
+    height: 36px;
+    width: 270px;
+}
+.change-code {
+    color: #009688;
+    font-size: 14px;
+    font-family: "微软雅黑", Arial, Helvetica, sans-serif;
+    text-decoration: underline;
+    line-height: 36px;
+}
+.verify-code {
+    width: 110px;
+    height: 36px;
+    margin-left: 5px;
+    cursor: pointer;
+}
+.verify-code-btn {
+    color: #ffffff;
+    background: #009688;
+    font-size: 12px;
+    height: 36px;
+    width: 110px;
+    margin-left: 5px;
+}
+.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

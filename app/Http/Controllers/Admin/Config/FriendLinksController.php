@@ -37,9 +37,9 @@ class FriendLinksController extends Controller
 
     public function store(FriendLinksRequest $request, StorageService $storageService)
     {
-        $image_path = $request->image_path;
-        if ($image_path && !starts_with($image_path, 'friend_links/')) {
-            $image_path = $storageService->move('temp/'.$image_path, ['target_dir' => 'friend_links']);
+        $image_path = $storageService->move('temp/'.$request->image_path, ['target_dir' => 'friend_links']);
+        if (!$image_path) {
+            return $this->handleFail('图片保存失败');
         }
         FriendLinks::create([
             'name' => $request->name,
@@ -58,12 +58,14 @@ class FriendLinksController extends Controller
     public function update(FriendLinksRequest $request, FriendLinks $friendLink, StorageService $storageService)
     {
         $image_path = $request->image_path;
-        if ($image_path && !starts_with($image_path, 'friend_links/')) {
-            $image_path = $storageService->move('temp/'.$image_path, ['target_dir' => 'friend_links']);
+        if (!starts_with($image_path, 'friend_links/')) {
+            $friendLink->ico = $storageService->move('temp/'.$image_path, ['target_dir' => 'friend_links']);
+            if (!$friendLink->ico) {
+                return $this->handleFail('图片上传失败');
+            }
         }
         $friendLink->name = $request->name;
         $friendLink->link = $request->link ?? '';
-        $friendLink->ico = $image_path;
         $friendLink->sort = $request->sort ?? 0;
         $friendLink->save();
         return $this->handleSuccess();

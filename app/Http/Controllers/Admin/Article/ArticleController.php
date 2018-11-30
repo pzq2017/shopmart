@@ -50,8 +50,9 @@ class ArticleController extends Controller
         $image_path = $request->image_path;
         $category_type = ArticleCategory::getType($request->catId);
         if ($category_type == ArticleCategory::TYPE_TEXT_AND_PICTURE_LIST) {
-            if ($image_path && !starts_with($image_path, '/article')) {
-                $image_path = $storageService->move('temp/'.$image_path, ['target_dir' => 'article']);
+            $image_path = $storageService->move('temp/'.$image_path, ['target_dir' => 'article']);
+            if (!$image_path) {
+                return $this->handleFail('图片保存失败');
             }
         }
         Article::create([
@@ -78,8 +79,11 @@ class ArticleController extends Controller
         $category_type = ArticleCategory::getType($request->catId);
         if ($category_type == ArticleCategory::TYPE_TEXT_AND_PICTURE_LIST) {
             $image_path = $request->image_path;
-            if ($image_path && !starts_with($image_path, '/article')) {
+            if (!starts_with($image_path, 'article/')) {
                 $article->image_path = $storageService->move('temp/'.$image_path, ['target_dir' => 'article']);
+                if (!$article->image_path) {
+                    return $this->handleFail('图片保存失败');
+                }
             }
         }
         $article->catid = $request->catId;

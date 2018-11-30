@@ -190,11 +190,11 @@ class SysMenuSeeder extends Seeder
             '会员管理' => [
                 [
                     'name' => '会员等级',
-                    'url' => '',
+                    'url' => route('admin.member.grade.index'),
                 ],
                 [
                     'name' => '会员管理',
-                    'url' => '',
+                    'url' => route('admin.member.index'),
                 ],
                 [
                     'name' => '账号管理',
