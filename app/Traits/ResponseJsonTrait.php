@@ -21,4 +21,11 @@ trait ResponseJsonTrait
             'message' => $message,
         ]);
     }
+
+    private function handleResult($resCode, $message=null, $resStatus=200)
+    {
+        $res = ['code' => $resCode];
+        if (!is_null($message)) $res['message'] = $message;
+        return response()->json($res, $resStatus);
+    }
 }

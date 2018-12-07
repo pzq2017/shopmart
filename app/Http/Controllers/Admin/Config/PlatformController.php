@@ -25,11 +25,28 @@ class PlatformController extends Controller
     public function save(Request $request, StorageService $storageService)
     {
         $fields = $this->ImagesMove($request->all(), $storageService);
+        $mailSettingKeys = ['mailSmtp', 'mailPort', 'mailAddress', 'mailSendTitle', 'mailUsername', 'mailPassword'];
+        $mailEnvKeys = ['MAIL_HOST', 'MAIL_PORT', 'MAIL_FROM_ADDRESS', 'MAIL_FROM_NAME', 'MAIL_USERNAME', 'MAIL_PASSWORD'];
+        $mailEnvKeyValues = [];
         foreach ($fields as $key => $value) {
             SysConfig::updateOrCreate(
                 ['code' => $key],
                 ['value' => $value]
             );
+            $index = array_search($key, $mailSettingKeys);
+            if ($index !== false) {
+                $mailEnvKeyValues[$mailEnvKeys[$index]] = $value;
+                if ($key == 'mailPort') {
+                    if ($value == 465 || $value == 994) {
+                        $mailEnvKeyValues['MAIL_ENCRYPTION'] = 'ssl';
+                    } else {
+                        $mailEnvKeyValues['MAIL_ENCRYPTION'] = 'tls';
+                    }
+                }
+            }
+        }
+        if (!empty($mailEnvKeyValues)) {
+            $this->WriteDataToEnv($mailEnvKeyValues);
         }
         return $this->handleSuccess();
     }
@@ -49,5 +66,19 @@ class PlatformController extends Controller
             $fields['goodsLogo'] = $storageService->move('temp/'.$fields['goodsLogo'], ['target_dir' => 'default']);
         }
         return $fields;
+    }
+
+    private function WriteDataToEnv($replaces)
+    {
+        $items = collect(file(app()->environmentFilePath(), FILE_IGNORE_NEW_LINES));
+        $newItems = $items->map(function ($item) use ($replaces) {
+            foreach ($replaces as $key => $value) {
+                if (str_contains($item, $key)) {
+                    return $key. '=' . $value;
+                }
+            }
+            return $item;
+        });
+        \File::put(app()->environmentFilePath(), implode($newItems->toArray(), "\n"));
     }
 }

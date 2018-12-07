@@ -4,33 +4,33 @@ var Common = {
     open: function (options) {
         var opts = {};
         opts = $.extend(opts, {offset: '100px'}, options);
-        layer.open(opts);
+        return layer.open(opts);
     },
     confirm: function (options) {
         var opts = {};
         opts = $.extend(opts, {title: '系统提示', offset: '150px'}, options);
-        layer.confirm(opts.content, {icon: 3, title: opts.title, offset: opts.offset}, options.yes, options.cancel);
+        return layer.confirm(opts.content, {icon: 3, title: opts.title, offset: opts.offset}, options.yes, options.cancel);
     },
     msg: function (msg, options, func) {
         if (typeof(options) !== 'function') {
             var opts = {};
             opts = $.extend(opts, {time: 3000, shade: [0.5, '#000000']}, options);
-            layer.msg(msg, opts, func);
+            return layer.msg(msg, opts, func);
         } else {
-            layer.msg(msg, options);
+            return layer.msg(msg, options);
         }
     },
     tips: function (content, selector, options) {
         var opts = {};
         opts = $.extend(opts, {tips: 1, time: 3000, maxWidth: 260}, options);
-        layer.tips(content, selector, opts);
+        return layer.tips(content, selector, opts);
     },
     loading: function () {
-        layer.load(2);
+        return layer.load(2);
     },
     close: function (index) {
         loading = 0;
-        layer.close(index);
+        return layer.close(index);
     },
     alertErrors: function (errors) {
         if (typeof(errors) == 'object') {

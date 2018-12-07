@@ -12,6 +12,8 @@ class Captcha extends Model
 
     protected $dates = ['created_at', 'updated_at'];
 
+    const TIMEOUT_MINUTE = 30;
+
     const TYPE_REGISTER = 1;
 
     public static function makeRandCode($length)
@@ -24,5 +26,25 @@ class Captcha extends Model
             $code .= $str[$pos];
         }
         return $code;
+    }
+
+    public static function check_sms_captcha($mobile, $code, $type)
+    {
+        return self::where([
+            ['mobile', '=', $mobile],
+            ['code', '=', $code],
+            ['type', '=', $type],
+            ['status', '=', 0]
+        ])->latest()->first();
+    }
+
+    public function setCaptchaUsed($mobile, $code, $type)
+    {
+        self::where([
+            ['mobile', '=', $mobile],
+            ['code', '=', $code],
+            ['type', '=', $type],
+            ['status', '=', 0]
+        ])->update(['status' => 1]);
     }
 }

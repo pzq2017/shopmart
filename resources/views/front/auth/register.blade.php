@@ -21,7 +21,8 @@
             check_mobile: '{{ route('register.check_mobile') }}',
             check_email: '{{ route('register.check_email') }}',
             send_sms: '{{ route('register.send_sms') }}',
-            register_store: '{{ route('register.store') }}'
+            register_store: '{{ route('register.store') }}',
+            agreement: '{{ route('agreement.register') }}'
         };
     </script>
 </head>
@@ -128,7 +129,7 @@
                         </div>
                         <div class="form-agreement">
                             <label><i></i><span>我已阅读并同意</span></label>
-                            <a href="javascript:void(0);">《注册协议》</a>
+                            <a id="register_agreement" href="javascript:void(0);">《注册协议》</a>
                             <input type="hidden" name="agreement">
                         </div>
                         <div class="form-button">

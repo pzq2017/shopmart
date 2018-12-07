@@ -15,6 +15,8 @@ Route::group(['namespace' => 'Front'], function () {
             Route::get('/check_email', 'RegisterController@checkEmail')->name('.check_email');
             Route::post('/send_sms', 'RegisterController@sendSms')->name('.send_sms');
             Route::post('/store', 'RegisterController@store')->name('.store');
+            Route::get('/activate_email', 'RegisterController@ActivateEmail')->name('.activate_email');
         });
     });
+    Route::get('agreement/register', 'AgreementController@register')->name('agreement.register');
 });

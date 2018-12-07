@@ -17,11 +17,11 @@ var promptClass = function (obj, tipText, flag) {
     }
     return flag;
 }
+var pwd_level = 0;
 var userRegister = {
     func: {
         init: function () {
-            $('#loginAccount').val('');
-            $('#loginPwd').val('');
+            form.reset();
             //发送短信验证码
             $('.btn-get-code').click(function () {
                 var mobile = $.trim($('#mobile').val()), verifyCode = $.trim($('#verifyCode').val());
@@ -37,7 +37,16 @@ var userRegister = {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
                         success: function (data) {
+                            userRegister.func.changeCaptcha();
                             if (data.code == '0000') {
+                                //弹出验证码发送成功的提示信息
+                                Common.open({
+                                    type: 1,
+                                    title: '提示',
+                                    area: ['400px', '150px'],
+                                    offset: 'auto',
+                                    content: '<div style="padding: 30px 20px; font-size: 14px;">短信验证码已成功发送到您的手机上，有效期30分钟, 请尽快输入。</div>'
+                                });
                                 setTime();
                             } else if (data.code == '0001') {
                                 promptClass($('#verifyCode'), data.message, false);
@@ -46,6 +55,7 @@ var userRegister = {
                             }
                         },
                         error: function () {
+                            userRegister.func.changeCaptcha();
                             obj.addClass('btn-get-code');
                             Common.alertErrors('网络超时，请重试');
                         }
@@ -54,7 +64,7 @@ var userRegister = {
                     obj.addClass('btn-get-code');
                 }
             })
-            //发送验证码倒计时
+            //重新发送验证码倒计时
             var countDown = 60;
             function setTime() {
                 if (countDown < 1) {
@@ -62,13 +72,23 @@ var userRegister = {
                     $('.verify-code-btn').html('获取验证码').addClass('btn-get-code').removeClass('disabled');
                 } else {
                     $('.verify-code-btn').attr('disabled', 'disabled');
-                    $('.verify-code-btn').html(countDown + 's').addClass('disabled')
+                    $('.verify-code-btn').html(countDown + 's后重新发送').addClass('disabled');
                     countDown--;
                 }
                 setTimeout(function () {
                     setTime();
                 }, 1000)
             }
+            //打开注册协议
+            $('#register_agreement').click(function () {
+                Common.open({
+                    title: '注册协议',
+                    type: 2,
+                    area: ['600px', '650px'],
+                    offset: 'auto',
+                    content: registerUrl.agreement
+                });
+            });
         },
         loadRegister: function () {
             $('#loginAccount').blur(function () {
@@ -98,7 +118,7 @@ var userRegister = {
             if (val == '') {
                 flag = promptClass(inp, '请输入用户名', false);
             } else if (/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9a-zA-Z]{6,20}$/.test(val) == false) {
-                flag = promptClass(inp, '用户名长度只能在6-20位字符之间且是字母和数字组合', false);
+                flag = promptClass(inp, '用户名必须是6-20位字符且是字母和数字组合', false);
             } else {
                 //检验用户名是否已被使用
                 $.ajax({
@@ -108,8 +128,10 @@ var userRegister = {
                     async: false,
                     dataType: 'json',
                     success: function (data) {
-                        if (data.code != '0000') {
+                        if (data.code == '0001') {
                             flag = promptClass(inp, '该用户名已被使用', false);
+                        } else if (data.code == '0002') {
+                            flag = promptClass(inp, '用户名含有非法字符，请重新输入', false);
                         } else {
                             flag = promptClass(inp, '', true);
                         }
@@ -199,7 +221,7 @@ var userRegister = {
                 inp.parent().parent().find('.prompt li').hide();
                 flag = true;
             } else {
-                if(!/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]{2,4}$/.test(email)) {
+                if(!/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]{2,4}$/.test(val)) {
                     flag = promptClass(inp, '请输入正确的电子邮箱', false);
                 }
                 //检验电子邮箱是否已被使用
@@ -212,7 +234,7 @@ var userRegister = {
                         dataType: 'json',
                         success: function (data) {
                             if (data.code != '0000') {
-                                flag = promptClass(inp, '该邮箱已存在，请使用其他邮箱', false);
+                                flag = promptClass(inp, '该邮箱已存在，请使用其它邮箱', false);
                             } else {
                                 flag = promptClass(inp, '', true);
                             }
@@ -224,32 +246,52 @@ var userRegister = {
         },
         checkAgreement: function () {
             if ($('.form-agreement').find('label>i').hasClass('checked') ==  false) {
-                Common.alertErrors("请接受注册协议");
+                Common.alertErrors("请接受并同意注册协议");
                 return false;
             }
             return true;
         },
         checkRegisterSubmit: function () {
+            var flag = true;
             if (!userRegister.func.checkLoginAccount()) {
-                return false;
+                flag = false;
             }
             if (!userRegister.func.checkLoginPwd()) {
-                return false;
+                flag = false;
             }
             if (!userRegister.func.checkConfirmPwd()) {
-                return false;
+                flag = false;
             }
             if (!userRegister.func.checkMobile()) {
-                return false;
+                flag = false;
             }
             if (!userRegister.func.checkSmsCode()) {
-                return false;
+                userRegister.func.changeCaptcha();
+                flag = false;
             }
             if (!userRegister.func.checkEmail()) {
-                return false;
+                flag = false;
             }
             if (!userRegister.func.checkAgreement()) {
-                return false;
+                flag = false;
+            }
+            return flag;
+        },
+        changeCaptcha: function () {
+            $('#verifyImg').trigger('click');
+            $('#verifyCode').val('');
+        },
+        registerSubmit: function (state) {
+            if (state == 'start') {
+                $('.btn-register').addClass('disabled').removeClass('sub').html('注册信息提交中...');
+                $('.btn-register').attr('disabled', 'disabled');
+                $('#loginPwd').attr('disabled', 'disabled');
+                $('#loginPwd_confirmation').attr('disabled', 'disabled');
+            } else if (state == 'done') {
+                $('.btn-register').removeClass('disabled').addClass('sub').html('立即注册');
+                $('.btn-register').removeAttr('disabled');
+                $('#loginPwd').removeAttr('disabled');
+                $('#loginPwd_confirmation').removeAttr('disabled');
             }
         },
         judgePwdLevel: function (password, cls) {
@@ -300,6 +342,7 @@ var userRegister = {
                 LColor = MColor = HColor = oColor;
             } else {
                 var sLevel = checkStrong(password);
+                    pwd_level = sLevel;
                 switch (sLevel) {
                     case 0:
                         LColor = MColor = HColor = oColor;
@@ -359,24 +402,42 @@ $(function () {
     });
 
     $('.sub').click(function () {
+        var obj = $(this);
         if (userRegister.func.checkRegisterSubmit()) {
-            $(this).addClass('disabled').removeClass('sub').html('数据提交中...');
-            $(this).attr('disabled', 'disabled');
-
+            userRegister.func.registerSubmit('start');
+            var loginPwd = $('#loginPwd').val(), loginPwd_confirmation = $('#loginPwd_confirmation').val();
             $.ajax({
                 url: registerUrl.register_store,
                 type: 'POST',
-                data: $('#register').serialize(),
+                data: $('#register').serialize() + '&loginPwd=' + loginPwd + '&loginPwd_confirmation=' + loginPwd_confirmation + '&password_level=' + pwd_level,
                 dataType: 'json',
                 contentType : "application/x-www-form-urlencoded; charset=utf-8",
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                error: function () {
-
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    Common.alertErrors('网络超时，请稍后再试');
+                    userRegister.func.registerSubmit('done');
                 },
                 success: function (data) {
+                    userRegister.func.registerSubmit('done');
+                    if (data && data.code == '0000') {
+                        $(this).removeClass('disabled').addClass('sub').html('立即注册');
+                        $(this).removeAttr('disabled');
+                        Common.msg('恭喜您，注册成功。', {icon: 1}, function () {
 
+                        });
+                    } else if (data && data.code == '0002') {
+                        $.each(data.message, function (key, value) {
+                            if (key == 'agreement') {
+                                Common.alertErrors(value.toString());
+                            } else {
+                                promptClass($('#' + key), value, false);
+                            }
+                        })
+                    } else {
+                        Common.alertErrors('注册失败');
+                    }
                 }
             });
         }
